@@ -140,6 +140,38 @@ def getAlongWayHexadecimalPrimary( beginBrightness, beginRatio, colorWidth, endB
 	brightness = beginRatio * float( beginBrightness ) + endRatio * float( endBrightness )
 	return getWidthHex( int( round( brightness ) ), colorWidth )
 
+def getAlterationFile(fileName):
+	"Get the file from the fileName or the lowercase fileName in the alterations directories."
+	settingsAlterationsDirectory = archive.getSettingsPath('alterations')
+	archive.makeDirectory(settingsAlterationsDirectory)
+	fileInSettingsAlterationsDirectory = getFileInGivenDirectory(settingsAlterationsDirectory, fileName)
+	if fileInSettingsAlterationsDirectory != '':
+		return fileInSettingsAlterationsDirectory
+	alterationsDirectory = archive.getSkeinforgePath('alterations')
+	return getFileInGivenDirectory(alterationsDirectory, fileName)
+
+def getAlterationFileLine(fileName):
+	"Get the alteration file line from the fileName."
+	lines = getAlterationLines(fileName)
+	if len(lines) == 0:
+		return []
+	return getAlterationFileLineBlindly(fileName)
+
+def getAlterationFileLineBlindly(fileName):
+	"Get the alteration file line from the fileName."
+	return '(<alterationFile>) %s (</alterationFile>)' % fileName
+
+def getAlterationFileLines(fileName):
+	'Get the alteration file line and the text lines from the fileName in the alterations directories.'
+	lines = getAlterationLines(fileName)
+	if len(lines) == 0:
+		return []
+	return [getAlterationFileLineBlindly(fileName)] + lines
+
+def getAlterationLines(fileName):
+	"Get the text lines from the fileName in the alterations directories."
+	return archive.getTextLines(getAlterationFile(fileName))
+
 def getDisplayedDialogFromConstructor(repository):
 	"Display the repository dialog."
 	try:
@@ -175,16 +207,6 @@ def getEachWordCapitalized( name ):
 		capitalizedStrings.append( word.capitalize() )
 	return ' '.join( capitalizedStrings )
 
-def getFileInAlterationsOrGivenDirectory(fileName):
-	"Get the file from the fileName or the lowercase fileName in the alterations directories."
-	settingsAlterationsDirectory = archive.getSettingsPath('alterations')
-	archive.makeDirectory(settingsAlterationsDirectory)
-	fileInSettingsAlterationsDirectory = getFileInGivenDirectory(settingsAlterationsDirectory, fileName)
-	if fileInSettingsAlterationsDirectory != '':
-		return fileInSettingsAlterationsDirectory
-	alterationsDirectory = archive.getSkeinforgePath('alterations')
-	return getFileInGivenDirectory(alterationsDirectory, fileName)
-
 def getFileInGivenDirectory( directory, fileName ):
 	"Get the file from the fileName or the lowercase fileName in the given directory."
 	directoryListing = os.listdir(directory)
@@ -219,10 +241,6 @@ def getGlobalRepositoryDialogValues():
 	"Get the global repository dialog values."
 	global globalRepositoryDialogListTable
 	return euclidean.getListTableElements(globalRepositoryDialogListTable)
-
-def getLinesInAlterationsOrGivenDirectory(fileName):
-	"Get the text lines from the fileName in the alterations directories, if there is no file look in the given directory."
-	return archive.getTextLines(getFileInAlterationsOrGivenDirectory(fileName))
 
 def getPathInFabmetheusFromFileNameHelp( fileNameHelp ):
 	"Get the directory path from file name help."

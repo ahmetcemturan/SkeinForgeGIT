@@ -141,7 +141,7 @@ class HomeSkein:
 	def getCraftedGcode( self, gcodeText, repository ):
 		"Parse gcode text and store the home gcode."
 		self.repository = repository
-		self.homingLines = settings.getLinesInAlterationsOrGivenDirectory(repository.nameOfHomingFile.value)
+		self.homingLines = settings.getAlterationFileLines(repository.nameOfHomingFile.value)
 		if len(self.homingLines) < 1:
 			return gcodeText
 		self.lines = archive.getTextLines(gcodeText)

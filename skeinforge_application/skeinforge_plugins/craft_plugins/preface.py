@@ -57,7 +57,7 @@ from __future__ import absolute_import
 #Init has to be imported first because it has code to workaround the python bug where relative imports don't work if the module is imported as a main module.
 import __init__
 
-from datetime import date
+from datetime import date, datetime
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
 from fabmetheus_utilities.svg_reader import SVGReader
 from fabmetheus_utilities import archive
@@ -135,13 +135,17 @@ class PrefaceSkein:
 
 	def addInitializationToOutput(self):
 		"Add initialization gcode to the output."
-		self.distanceFeedRate.addTagBracketedLine('creation', 'skeinforge') # GCode formatted comment
-		absoluteFilePathUntilDot = os.path.abspath(__file__)[: os.path.abspath(__file__).rfind('.')]
+		self.distanceFeedRate.addTagBracketedLine('format', 'skeinforge gcode')
+		absoluteFilePathUntilDot = archive.getUntilDot(archive.getCraftPluginsDirectoryPath('preface.py'))
+		dateTodayString = date.today().isoformat().replace('-', '.')[2 :]
 		if absoluteFilePathUntilDot == '/home/enrique/Desktop/backup/babbleold/script/reprap/fabmetheus/skeinforge_application/skeinforge_plugins/craft_plugins/preface': #is this script on Enrique's computer?
-			archive.writeFileText(archive.getVersionFileName(), date.today().isoformat().replace('-', '.')[2 :])
+			archive.writeFileText(archive.getVersionFileName(), dateTodayString)
 		versionText = archive.getFileText(archive.getVersionFileName())
-		self.distanceFeedRate.addTagBracketedLine('version', versionText) # GCode formatted comment
-		self.distanceFeedRate.addLine('(<extruderInitialization>)') # GCode formatted comment
+		self.distanceFeedRate.addTagBracketedLine('version', versionText)
+		dateTimeTuple = datetime.now().timetuple()
+		created = dateTodayString + '|%s:%s' % (dateTimeTuple[3], dateTimeTuple[4])
+		self.distanceFeedRate.addTagBracketedLine('created', created)
+		self.distanceFeedRate.addLine('(<extruderInitialization>)')
 		if self.repository.setPositioningToAbsolute.value:
 			self.distanceFeedRate.addLine('G90 ;set positioning to absolute') # Set positioning to absolute.
 		if self.repository.setUnitsToMillimeters.value:

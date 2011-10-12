@@ -87,7 +87,7 @@ def addAlreadyFilledArounds( alreadyFilledArounds, loop, radius ):
 	"Add already filled loops around loop to alreadyFilledArounds."
 	radius = abs(radius)
 	alreadyFilledLoop = []
-	slightlyGreaterThanRadius = 1.01 * radius
+	slightlyGreaterThanRadius = intercircle.globalIntercircleMultiplier * radius
 	muchGreaterThanRadius = 2.5 * radius
 	centers = intercircle.getCentersFromLoop( loop, slightlyGreaterThanRadius )
 	for center in centers:
@@ -147,7 +147,7 @@ def addSegmentOutline( isThick, outlines, pointBegin, pointEnd, width ):
 		outline.append( pointEndIntermediate )
 		outline.append( outsideEndCenterDown )
 		outline.append( outsideBeginCenterDown )
-	outlines.append( euclidean.getPointsRoundZAxis( normalizedSegment, outline ) )
+	outlines.append( euclidean.getRotatedComplexes( normalizedSegment, outline ) )
 
 def getCraftedText( fileName, text='', repository=None):
 	"Inset the preface file or text."
@@ -194,11 +194,7 @@ def getSegmentsFromLoopListsPoints( loopLists, pointBegin, pointEnd ):
 	pointEndRotated = segmentYMirror * pointEnd
 	rotatedLoopLists = []
 	for loopList in loopLists:
-		rotatedLoopList = []
-		rotatedLoopLists.append( rotatedLoopList )
-		for loop in loopList:
-			rotatedLoop = euclidean.getPointsRoundZAxis( segmentYMirror, loop )
-			rotatedLoopList.append( rotatedLoop )
+		rotatedLoopLists.append(euclidean.getRotatedComplexLists(segmentYMirror, loopList))
 	xIntersectionIndexList = []
 	xIntersectionIndexList.append( euclidean.XIntersectionIndex( - 1, pointBeginRotated.real ) )
 	xIntersectionIndexList.append( euclidean.XIntersectionIndex( - 1, pointEndRotated.real ) )

@@ -49,6 +49,7 @@ from __future__ import absolute_import
 import __init__
 
 from fabmetheus_utilities.fabmetheus_tools import fabmetheus_interpret
+from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3 import Vector3
 from fabmetheus_utilities import archive
 from fabmetheus_utilities import euclidean
@@ -97,6 +98,7 @@ class SkinRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skin', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Skin')
 		self.activateSkin = settings.BooleanSetting().getFromValue('Activate Skin', self, False)
+		self.halfWidthPerimeter = settings.BooleanSetting().getFromValue('Half Width Perimeter', self, True)
 		self.hopWhenExtrudingInfill = settings.BooleanSetting().getFromValue('Hop When Extruding Infill', self, False)
 		self.layersFrom = settings.IntSpin().getSingleIncrementFromValue(0, 'Layers From (index):', self, 912345678, 1)
 		self.executeTitle = 'Skin'
@@ -151,40 +153,30 @@ class SkinSkein:
 
 	def addSkinnedInfillBoundary(self, infillBoundaries, offsetY, upperZ, z):
 		'Add skinned infill boundary.'
-		alreadyFilledInsets = []
 		aroundInset = 0.25 * self.skinInfillInset
+		arounds = []
 		aroundWidth = 0.25 * self.skinInfillInset
 		endpoints = []
 		pixelTable = {}
-		slightlyGreaterThanInfill = 1.01 * self.skinInfillInset
-		xIntersectionsTable = {}
+		rotatedLoops = []
 		for infillBoundary in infillBoundaries:
-			infillBoundaryRotated = euclidean.getPointsRoundZAxis(self.reverseRotation, infillBoundary)
+			infillBoundaryRotated = euclidean.getRotatedComplexes(self.reverseRotation, infillBoundary)
 			if offsetY != 0.0:
 				for infillPointRotatedIndex, infillPointRotated in enumerate(infillBoundaryRotated):
 					infillBoundaryRotated[infillPointRotatedIndex] = complex(infillPointRotated.real, infillPointRotated.imag - offsetY)
-			centers = intercircle.getCentersFromLoop(infillBoundaryRotated, slightlyGreaterThanInfill)
-			for center in centers:
-				alreadyFilledInset = intercircle.getSimplifiedInsetFromClockwiseLoop(center, self.skinInfillInset)
-				if intercircle.isLargeSameDirection(alreadyFilledInset, center, self.skinInfillInset):
-					if euclidean.isPathInsideLoop(infillBoundaryRotated, alreadyFilledInset) == euclidean.isWiddershins(infillBoundaryRotated):
-						alreadyFilledInsets.append(alreadyFilledInset)
-						around = intercircle.getSimplifiedInsetFromClockwiseLoop(center, aroundInset)
-						euclidean.addLoopToPixelTable(around, pixelTable, aroundWidth)
-		for alreadyFilledInset in alreadyFilledInsets:
-			euclidean.addXIntersectionsFromLoopForTable(alreadyFilledInset, xIntersectionsTable, self.skinInfillWidth)
-		xIntersectionsTableKeys = xIntersectionsTable.keys()
-		xIntersectionsTableKeys.sort()
-		for xIntersectionsTableKey in xIntersectionsTableKeys:
-			xIntersections = xIntersectionsTable[xIntersectionsTableKey]
+			rotatedLoops.append(infillBoundaryRotated)
+		infillDictionary = triangle_mesh.getInfillDictionary(
+			aroundInset, arounds, aroundWidth, self.skinInfillInset, self.skinInfillWidth, pixelTable, rotatedLoops)
+		for infillDictionaryKey in infillDictionary.keys():
+			xIntersections = infillDictionary[infillDictionaryKey]
 			xIntersections.sort()
-			for segment in euclidean.getSegmentsFromXIntersections(xIntersections, xIntersectionsTableKey * self.skinInfillWidth):
+			for segment in euclidean.getSegmentsFromXIntersections(xIntersections, infillDictionaryKey * self.skinInfillWidth):
 				for endpoint in segment:
 					endpoint.point = complex(endpoint.point.real, endpoint.point.imag + offsetY)
 					endpoints.append(endpoint)
 		infillPaths = euclidean.getPathsFromEndpoints(endpoints, 5.0 * self.skinInfillWidth, pixelTable, aroundWidth)
 		for infillPath in infillPaths:
-			infillRotated = euclidean.getPointsRoundZAxis(self.rotation, infillPath)
+			infillRotated = euclidean.getRotatedComplexes(self.rotation, infillPath)
 			if upperZ > z and self.repository.hopWhenExtrudingInfill.value:
 				self.distanceFeedRate.addGcodeMovementZWithFeedRate(self.maximumZFeedRateMinute, infillRotated[0], upperZ)
 			self.distanceFeedRate.addGcodeFromFeedRateThreadZ(self.feedRateMinute, infillRotated, self.travelFeedRateMinute, z)
@@ -203,7 +195,7 @@ class SkinSkein:
 		outerPerimeter = intercircle.getLargestInsetLoopFromLoop(perimeterThread, -self.quarterPerimeterWidth)
 		innerPerimeter = self.getClippedSimplifiedLoopPathByLoop(innerPerimeter)
 		outerPerimeter = self.getClippedSimplifiedLoopPathByLoop(outerPerimeter)
-		if len(innerPerimeter) < 4 or len(outerPerimeter) < 4:
+		if len(innerPerimeter) < 4 or len(outerPerimeter) < 4 or not self.repository.halfWidthPerimeter.value:
 			self.addFlowRateLine(0.5 * self.oldFlowRate)
 			self.addPerimeterLoop(self.perimeter, lowerZ)
 			self.addPerimeterLoop(self.perimeter, self.oldLocation.z)
@@ -235,7 +227,7 @@ class SkinSkein:
 		for self.lineIndex in xrange(self.lineIndex, len(self.lines)):
 			line = self.lines[self.lineIndex]
 			self.parseLine(line)
-		return self.distanceFeedRate.output.getvalue()
+		return gcodec.getGcodeWithoutDuplication('M108', self.distanceFeedRate.output.getvalue())
 
 	def parseBoundaries(self):
 		'Parse the boundaries and add them to the boundary layers.'

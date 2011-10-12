@@ -230,52 +230,64 @@ import os
 import sys
 
 
-# document synopsis..
-# no need for completely filled bridge layer
-# analyze in export
-# add date time 11.01.02|12:08
-# double M108 problem by raft
-# unpause slow flow rate instead of speeding feed rate
+# document after fillet, then fill and comb once they are updated, maybe later subplugins like export static and export canvas, maybe later mill cut and coil plugins
+# move more __file__ tableau
+# raftPerimeter outset by maximum thickness
+# check skin perimeter feed and flow
+# skin horizontal perimeter divisions
+# check last reported bug
 # fix arc model 'too large for getArcComplexes in svgReader'
+# scrollbar/width problem when starting with narrow view like help/meta/profile
+# document announce Surrounding Angle up to 80
+# announce bookend / alteration
+# interim release
+#
+# smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
+# voronoi average location intersection looped inset intercircles
+# move dimension after unpause
+# replace alteration with file, move to bookend
+# command
 #
 # unimportant
 # minor outline problem when an end path goes through a path, like in the letter A
 # view profile 1 mm thickness
+# analyze doesn't save settings
 #
-# fix infill on small circles, like 25499 Screw_Holder_stretch.. G1 X39.6221 Y-38.9346 Z14.0001 F960.0
+# announce analyzeGcode in export
+#
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
-# work out why skinning sometimes straightens a side of a circle
-# replace getHorizontalSegmentListsFromLoo.. in fill also change inset algorithm to skin
-# use shortened infill to determine sparseness
 # skin layers without something over the infill
+# unpause slow flow rate instead of speeding feed rate
 # maybe in svgReader if loop intersection with previous union else add
-# smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
-# raftPerimeter outset by maximum thickness
 # set temperature in temperature
 # add links download manual svg_writer, add left right arrow keys to layer
 # infuse _extrusion
 # cutting ahmet
+#
+# comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
+# global simplify pathBetween
+# comb documentation
+#
 # When opening a file for craft I wondered if there is an option to set the file type to .stl as it currently defaults to .xml
-# scrollbar/width problem when starting with narrow view like help/meta/profile
 # check inset loop for intersection with rotatedLoopLayer.loops
+# add fill in penultimate loops
 # maybe make vectorwrite prominent, not skeiniso, probably not because it doesn't work on Mac
-# move more __file__
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # hollow top
 # chamber: heated bed off at a layer http://blog.makerbot.com/2011/03/17/if-you-cant-stand-the-heat/
 # packingDensity or density in grid - probably just density
 # derivations for shapes
 # think about rectangular getVector3RemoveByPre..
-# links in layerTemplate
 # del previous, add begin & end if far  get actual path
 # linearbearingexample 15 x 1 x 2, linearbearingcage
 # remember xy in skeiniso
 # polling
 # connectionfrom, to, connect, xaxis
 # lathe, transform normal in getRemaining, getConnection
+# add overview link to crnsdoo index and svg page
 # getConnection of some kind like getConnectionVertexes, getConnection
+# getElementsByLocalName which is the equivalent of # getElementsByTagName
 # xml_creation
-# voronoi average location intersection looped inset intercircles
 # 'fileName, text, repository' commandLineInterface
 # delete: text = text.replace(('\nName                          %sValue\n' % globalSpreadsheetSeparator), ('\n_Name                          %sValue\n' % globalSpreadsheetSeparator))
 # comment search from home panel when there is an input field
@@ -290,14 +302,13 @@ import sys
 # probably not replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
 # mesh. for cube, then cyliner, then sphere after lathe
 # dimension extrude diameter, density
+# maybe get rid of testLoops once they are no longer needed
 # thermistor lookup table
-# add overview link to crnsdoo index and svg page
 # stretch add back addAlong
 # import, write, copy examples
 # maybe remove default warnings from scale, rotate, translate, transform
 # easy helix
 # write tool; maybe write one deep
-# getElementsByLocalName which is the equivalent of # getElementsByTagName
 #
 #
 # tube
@@ -316,13 +327,8 @@ import sys
 # dovetail
 # maybe not getNewObject, getNew, addToBoolean
 # work out close and radius
-# maybe try to get rid of comment if possible
 # maybe have add function as well as append for list and string
 # maybe move and give geometryOutput to cube, cylinder, sphere
-#
-# comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
-# global simplify pathBetween
-# comb documentation
 #
 # maybe move widen before bottom
 # maybe add 1 to max layer input to iso in layer_template.svg
@@ -344,13 +350,12 @@ import sys
 # remove index from CircleIntersection remove ahead or behind from CircleIntersection _speed
 # cache surroundingCarves _speed
 # probably not speed up CircleIntersection by performing isWithinCircles before creation _speed
-# pixelSet instead of pixelTable for arounds _speed
+# don't remove brackets in early craft tools _speed
 #
 #
 # add hook _extrusion
 # integral thin width _extrusion
 # layer color, for multilayer start http://reprap.org/pub/Main/MultipleMaterialsFiles/legend.xml _extrusion
-# maybe double height shells option _extrusion
 # maybe raft triple layer base, middle interface with hot loop or ties
 # somehow, add pattern to outside, http://blog.makerbot.com/2010/09/03/lampshades/
 # implement acceleration & collinear removal in penultimate viewers _extrusion
@@ -363,7 +368,7 @@ import sys
 # probably not set addedLocation in distanceFeedRate after arc move
 # maybe horizontal bridging and/or check to see if the ends are standing on anything
 # thin self? check when removing intersecting paths in inset
-# maybe later remove isPerimeterPathInSurroundLoops, once there are no weird fill bugs, also change getHorizontalSegmentListsFromLoopLists
+# maybe later remove isPerimeterPathInSurroundLoops, once there are no weird fill bugs
 # save all analyze viewers of the same name except itself, update help menu self.wikiManualPrimary.setUpdateFunction
 # check alterations folder first, if there is something copy it to the home directory, if not check the home directory
 # add links to demozendium in help
@@ -393,7 +398,6 @@ import sys
 # maybe split into source code and documentation sections
 # transform plugins, start with sarrus http://www.thingiverse.com/thing:1425
 # maybe make setting backups
-# maybe settings in gcode or saved versions
 # move skeinforge_utilities to fabmetheus_utilities
 # maybe lathe cutting
 # maybe lathe extrusion

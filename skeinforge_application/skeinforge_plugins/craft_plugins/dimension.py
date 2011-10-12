@@ -1,16 +1,20 @@
 #! /usr/bin/env python
 """
 This page is in the table of contents.
-Dimension adds Adrian's extruder distance E value to the gcode movement lines, as described at:
+Dimension adds Adrian's extruder distance E value so firmware does not have to calculate it on it's own and can set the extruder speed in relation to the distance that needs to be extruded.  Some printers don't support this.  Extruder distance is described at:
+
 http://blog.reprap.org/2009/05/4d-printing.html
 
 and in Erik de Bruijn's conversion script page at:
+
 http://objects.reprap.org/wiki/3D-to-5D-Gcode.php
 
 The dimension manual page is at:
+
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Dimension
 
 Nophead wrote an excellent article on how to set the filament parameters:
+
 http://hydraraptor.blogspot.com/2011/03/spot-on-flow-rate.html
 
 ==Operation==
@@ -18,7 +22,7 @@ The default 'Activate Dimension' checkbox is off.  When it is on, the functions 
 
 ==Settings==
 ===Extrusion Distance Format Choice===
-Default is 'Absolute Extrusion Distance' because in Adrian's description the distance is absolute.  In future, because the relative distances are smaller than the cumulative absolute distances, hopefully the firmaware will be able to use relative distance.
+Default is 'Absolute Extrusion Distance' because in Adrian's description the distance is absolute.  In future, because the relative distances are smaller than the cumulative absolute distances, hopefully the firmware will be able to use relative distance.
 
 ====Absolute Extrusion Distance====
 When selected, the extrusion distance output will be the total extrusion distance to that gcode line.
@@ -29,7 +33,9 @@ When selected, the extrusion distance output will be the extrusion distance from
 ===Extruder Retraction Speed===
 Default is 13.3 mm/s.
 
-Defines the extruder retraction feed rate.
+Defines the extruder retraction feed rate.  A high value will allow the retraction operation to complete before much material oozes out.  If your extruder can handle it, this value should be much larger than your feed rate.
+
+As an example, I have a feed rate of 48 mm/s and a 'Extruder Retraction Speed' of 150 mm/s.
 
 ===Filament===
 ====Filament Diameter====
@@ -54,12 +60,14 @@ When selected, retraction will work even when the next thread is within the same
 ===Retraction Distance===
 Default is zero.
 
-Defines the retraction distance when the thread ends.
+Defines the amount the extruder retracts (sucks back) the extruded filament whenever an extruder stop is commanded.  Using this seems to help prevent stringing.  e.g. If set to 10 the extruder reverses the distance required to pull back 10mm of filament.  In fact this does not actually happen but if you set this distance by trial and error you can get to a point where there is very little ooze from the extruder when it stops which is not normally the case. 
 
 ===Restart Extra Distance===
 Default is zero.
 
 Defines the restart extra distance when the thread restarts.  The restart distance will be the retraction distance plus the restart extra distance.
+
+If this is greater than zero when the extruder starts this distance is added to the retract value giving extra filament.  It can be a negative value in which case it is subtracted from the retraction distance.  On some Repstrap machines a negative value can stop the build up of plastic that can occur at the start of perimeters.
 
 ==Examples==
 The following examples dimension the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and dimension.py.
@@ -364,7 +372,7 @@ class DimensionSkein:
 			self.layerIndex += 1
 		elif firstWord == 'M101':
 			self.addLinearMoveExtrusionDistanceLine(self.restartDistance * self.retractionRatio)
-			if self.totalExtrusionDistance > 999999.0: 
+			if self.totalExtrusionDistance > 65535.0:
 				if not self.repository.relativeExtrusionDistance.value:
 					self.distanceFeedRate.addLine('G92 E0')
 					self.totalExtrusionDistance = 0.0

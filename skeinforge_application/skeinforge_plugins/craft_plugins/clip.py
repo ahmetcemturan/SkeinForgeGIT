@@ -1,6 +1,6 @@
 """
 This page is in the table of contents.
-Clip clips the ends of loops to prevent bumps from forming.
+The clip plugin clips the loop ends to prevent bumps from forming, and connects loops.
 
 The clip manual page is at:
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Clip
@@ -19,7 +19,11 @@ This setting will affect the output of clip, and the output of the skin.  In ski
 ===Maximum Connection Distance Over Perimeter Width===
 Default is ten.
 
-Defines the ratio of the maximum connection distance between loops over the perimeter width.  If the ratio is zero, nothing will be done.  If it is ratio greater than zero, clip will connect nearby loops, combining them into a spiral.  For loop connection, nearby means that the distance between a pair of loops is smaller or equal to the maximum connection distance.
+Defines the ratio of the maximum connection distance between loops over the perimeter width.
+
+Clip will attempt to connect loops that end close to each other, combining them into a spiral, so that the extruder does not stop and restart.  This setting sets the maximum gap size to connect.  This feature can reduce the amount of extra material or gaps formed at the loop end.
+
+Setting this to zero disables this feature, preventing the loops from being connected.
 
 ==Examples==
 The following examples clip the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and clip.py.
