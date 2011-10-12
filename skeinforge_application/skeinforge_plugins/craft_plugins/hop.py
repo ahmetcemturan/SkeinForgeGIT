@@ -2,11 +2,19 @@
 This page is in the table of contents.
 Hop is a script to raise the extruder when it is not extruding.
 
+Note: 
+
+Note: In some cases where you have thin overhang this plugin can help solve the problem object being knocked off by the head
+
 The hop manual page is at:
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Hop
 
 ==Operation==
-The default 'Activate Hop' checkbox is off.  It is off because Vik and Nophead found better results without hopping.  When it is on, the functions described below will work, when it is off, the functions will not be called.
+The default 'Activate Hop' checkbox is off.
+
+It is off because Vik and Nophead found better results without hopping.  Numerous users reported better output without this plugin hence it is off by default.  
+
+When activated the extruder will hop when traveling.  When it is off, nothing will be done.
 
 ==Settings==
 ===Hop Over Layer Thickness===

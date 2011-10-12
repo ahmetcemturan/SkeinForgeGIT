@@ -1074,20 +1074,25 @@ class FillSkein:
 			addAroundGridPoint( arounds, gridPoint, gridPointInsetX, gridPointInsetY, gridPoints, self.gridRadius, isBothOrNone, self.isDoubleJunction, self.isJunctionWide, paths, pixelTable, width )
 
 	def addRotatedCarve(self, currentLayer, layerDelta, reverseRotation, surroundingCarves):
-		'Add a rotated carve to the surrounding carves.'
+		'Add a rotated carve to the surrounding carves.rotatedCarveDictionary'
 		layerIndex = currentLayer + layerDelta
 		if layerIndex < 0 or layerIndex >= len(self.rotatedLayers):
 			return
-		nestedRings = self.rotatedLayers[layerIndex].nestedRings
+		layerDifference = abs(layerDelta)
+		rotatedLayer = self.rotatedLayers[layerIndex]
+		if layerDifference in rotatedLayer.rotatedCarveDictionary:
+			surroundingCarves.append(rotatedLayer.rotatedCarveDictionary[layerDifference])
+			return
+		nestedRings = rotatedLayer.nestedRings
 		rotatedCarve = []
 		for nestedRing in nestedRings:
 			planeRotatedLoop = euclidean.getRotatedComplexes(reverseRotation, nestedRing.boundary)
 			rotatedCarve.append(planeRotatedLoop)
-		layerDifference = abs(layerDelta)
 		outsetRadius = float(layerDifference) * self.layerThickness * self.surroundingSlope - self.perimeterWidth
-		if outsetRadius > self.smallerThanPerimeter:
-			rotatedCarve = intercircle.getInsetSeparateLoopsFromLoops(-outsetRadius, rotatedCarve)
+		if outsetRadius > 0.0:
+			rotatedCarve = intercircle.getInsetSeparateLoopsFromAroundLoops(rotatedCarve, -outsetRadius, self.layerThickness)
 		surroundingCarves.append(rotatedCarve)
+		rotatedLayer.rotatedCarveDictionary[layerDifference] = rotatedCarve
 
 	def addThreadsBridgeLayer(self, layerIndex, nestedRings, rotatedLayer, testLoops=None):
 		'Add the threads, add the bridge end & the layer end tag.'
@@ -1173,8 +1178,8 @@ class FillSkein:
 		rotatedLoops = euclidean.getRotatedComplexLists(reverseRotationBaseAngle, fillLoops)
 		if self.repository.infillPatternGridCircular.value:
 			return self.getGridPointsByLoops(
-				gridRotationAngle, intercircle.getInsetSeparateLoopsFromLoops(-self.gridCircleRadius, rotatedLoops))
-		return self.getGridPointsByLoops(gridRotationAngle, intercircle.getInsetSeparateLoopsFromLoops(self.gridInset, rotatedLoops))
+				gridRotationAngle, intercircle.getInsetSeparateLoopsFromLoops(rotatedLoops, -self.gridCircleRadius))
+		return self.getGridPointsByLoops(gridRotationAngle, intercircle.getInsetSeparateLoopsFromLoops(rotatedLoops, self.gridInset))
 
 	def getGridPointsByLoops(self, gridRotationAngle, loops):
 		'Get the grid points by loops.'
@@ -1265,7 +1270,6 @@ class FillSkein:
 				self.distanceFeedRate.addTagRoundedLine('infillWidth', self.infillWidth)
 			elif firstWord == '(<perimeterWidth>':
 				self.perimeterWidth = float(splitLine[1])
-				self.smallerThanPerimeter = 0.2 * self.perimeterWidth
 				threadSequenceString = ' '.join( self.threadSequence )
 				self.distanceFeedRate.addTagBracketedLine('threadSequenceString', threadSequenceString )
 			elif firstWord == '(</extruderInitialization>)':
@@ -1341,6 +1345,8 @@ class FillSkein:
 class RotatedLayer:
 	'A rotated layer.'
 	def __init__( self, z ):
+		'Initialize.'
+		self.rotatedCarveDictionary = {}
 		self.rotation = None
 		self.nestedRings = []
 		self.z = z

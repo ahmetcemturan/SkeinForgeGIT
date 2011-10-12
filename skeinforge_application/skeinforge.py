@@ -230,22 +230,21 @@ import os
 import sys
 
 
-# document after fillet, then fill and comb once they are updated, maybe later subplugins like export static and export canvas, maybe later mill cut and coil plugins
-# move more __file__ tableau
-# raftPerimeter outset by maximum thickness
-# check skin perimeter feed and flow
-# skin horizontal perimeter divisions
-# check last reported bug
-# fix arc model 'too large for getArcComplexes in svgReader'
-# scrollbar/width problem when starting with narrow view like help/meta/profile
+# document after hop, then comb, fill & home once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension
+# scrollbar/width problem when starting with narrow view like help, profile
 # document announce Surrounding Angle up to 80
-# announce bookend / alteration
 # interim release
+#
+# announce bookend / alteration, change alterations to (<alterationDeleteThisPrefix/>)
+# rename homing home
+# add volume fraction to fill, if there is no fill do not add fill
 #
 # smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
 # voronoi average location intersection looped inset intercircles
 # move dimension after unpause
-# replace alteration with file, move to bookend
+# announce analyzeGcode in export
+# release
+#
 # command
 #
 # unimportant
@@ -253,7 +252,6 @@ import sys
 # view profile 1 mm thickness
 # analyze doesn't save settings
 #
-# announce analyzeGcode in export
 #
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
 # skin layers without something over the infill
@@ -283,6 +281,7 @@ import sys
 # remember xy in skeiniso
 # polling
 # connectionfrom, to, connect, xaxis
+# move replace from export to alterations
 # lathe, transform normal in getRemaining, getConnection
 # add overview link to crnsdoo index and svg page
 # getConnection of some kind like getConnectionVertexes, getConnection
@@ -348,7 +347,6 @@ import sys
 #
 #
 # remove index from CircleIntersection remove ahead or behind from CircleIntersection _speed
-# cache surroundingCarves _speed
 # probably not speed up CircleIntersection by performing isWithinCircles before creation _speed
 # don't remove brackets in early craft tools _speed
 #
@@ -567,7 +565,9 @@ class SkeinforgeRepository:
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge.html', self)
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '')
 		self.profileType = settings.MenuButtonDisplay().getFromName('Profile Type: ', self )
+		self.profileType.menuButtonColumnspan = 6
 		self.profileSelection = settings.MenuButtonDisplay().getFromName('Profile Selection: ', self)
+		self.profileSelection.menuButtonColumnspan = 6
 		addToProfileMenu( self.profileSelection, self.profileType, self )
 		settings.LabelDisplay().getFromName('', self)
 		importantFileNames = ['craft', 'profile']

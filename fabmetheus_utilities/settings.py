@@ -497,12 +497,12 @@ def setButtonFontWeightString( button, isBold ):
 	except:
 		pass
 
-def setEntryText( entry, value ):
+def setEntryText(entry, value):
 	"Set the entry text."
 	if entry == None:
 		return
-	entry.delete( 0, Tkinter.END )
-	entry.insert( 0, str(value) )
+	entry.delete(0, Tkinter.END)
+	entry.insert(0, str(value))
 
 def setIntegerValueToString( integerSetting, valueString ):
 	"Set the integer to the string."
@@ -698,7 +698,7 @@ class StringSetting:
 
 	def setStateToValue(self):
 		"Set the entry to the value."
-		setEntryText( self.entry, self.value )
+		setEntryText(self.entry, self.value)
 
 	def setToDisplay(self):
 		"Set the string to the entry field."
@@ -1446,6 +1446,7 @@ class MenuButtonDisplay:
 
 	def getFromName( self, name, repository ):
 		"Initialize."
+		self.menuButtonColumnspan = 2
 		self.menuRadios = []
 		self.name = name
 		self.radioVar = None
@@ -1473,7 +1474,7 @@ class MenuButtonDisplay:
 		self.label = Tkinter.Label( gridPosition.master, text = self.name )
 		self.label.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
 		self.menuButton = Tkinter.OptionMenu( gridPosition.master, self.radioVar, self.optionList )
-		self.menuButton.grid( row = gridPosition.row, column = 3, columnspan = 2, sticky = Tkinter.W )
+		self.menuButton.grid( row = gridPosition.row, column = 3, columnspan = self.menuButtonColumnspan, sticky = Tkinter.W )
 		self.menuButton.menu = Tkinter.Menu( self.menuButton, tearoff = 0 )
 		self.menu = self.menuButton.menu
 		self.menuButton['menu']  =  self.menu
@@ -1822,33 +1823,16 @@ class TextSetting( StringSetting ):
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		gridPosition.increment()
-		self.label = Tkinter.Label( gridPosition.master, text = self.name )
-		self.label.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
+		self.label = Tkinter.Label(gridPosition.master, text=self.name)
+		self.label.grid(row=gridPosition.row, column=0, columnspan=3, sticky=Tkinter.W)
 		gridPosition.increment()
-		self.entry = Tkinter.Text( gridPosition.master )
+		# An entry rather than a text is used because there is a weird bug that when a text is used in the first plugin displayed,
+		# the scrollbar is hidden in the analyze and craft frames.
+		self.entry = Tkinter.Entry(gridPosition.master)
 		self.setStateToValue()
-		self.entry.grid( row = gridPosition.row, column = 0, columnspan = 5, sticky = Tkinter.W )
-		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
-
-	def getFromValue( self, name, repository, value ):
-		"Initialize."
-		self.getFromValueOnly( name, repository, value )
-		repository.displayEntities.append(self)
-		repository.preferences.append(self)
-		return self
-
-	def setStateToValue(self):
-		"Set the entry to the value."
-		try:
-			self.entry.delete( 1.0, Tkinter.END )
-			self.entry.insert( Tkinter.INSERT, self.value )
-		except:
-			pass
-
-	def setToDisplay(self):
-		"Set the string to the entry field."
-		valueString = self.entry.get( 1.0, Tkinter.END )
-		self.setValueToString( valueString )
+		self.entry.grid(row=gridPosition.row, column=0, columnspan=5)
+		self.entry['width'] = 70
+		LabelHelp(self.repository.fileNameHelp, gridPosition.master, self.name, self.label)
 
 	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
 		"Set the value to the second word of a split line."

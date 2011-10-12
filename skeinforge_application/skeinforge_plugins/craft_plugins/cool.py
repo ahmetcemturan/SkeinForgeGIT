@@ -195,7 +195,7 @@ class CoolSkein:
 			return
 		insetBoundaryLoops = self.boundaryLayer.loops
 		if abs(self.repository.orbitalOutset.value) > 0.1 * abs(self.perimeterWidth):
-			insetBoundaryLoops = intercircle.getInsetLoopsFromLoops(-self.repository.orbitalOutset.value, self.boundaryLayer.loops)
+			insetBoundaryLoops = intercircle.getInsetLoopsFromLoops(self.boundaryLayer.loops, -self.repository.orbitalOutset.value)
 		if len(insetBoundaryLoops) < 1:
 			insetBoundaryLoops = self.boundaryLayer.loops
 		largestLoop = euclidean.getLargestLoop(insetBoundaryLoops)

@@ -105,7 +105,7 @@ class OutsetSkein:
 
 	def addOutset(self, rotatedLoopLayer):
 		'Add outset to the layer.'
-		extrudateLoops = intercircle.getInsetLoopsFromLoops(-self.absoluteHalfPerimeterWidth, rotatedLoopLayer.loops)
+		extrudateLoops = intercircle.getInsetLoopsFromLoops(rotatedLoopLayer.loops, -self.absoluteHalfPerimeterWidth)
 		triangle_mesh.sortLoopsInOrderOfArea(False, extrudateLoops)
 		for extrudateLoop in extrudateLoops:
 			self.addGcodeFromRemainingLoop(extrudateLoop, self.absoluteHalfPerimeterWidth, rotatedLoopLayer.z)
