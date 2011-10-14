@@ -1322,11 +1322,12 @@ class LabelDisplay:
 		"Add this to the dialog."
 		gridPosition.increment()
 		self.label = Tkinter.Label( gridPosition.master, text = self.name )
-		self.label.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
+		self.label.grid( row = gridPosition.row, column = 0, columnspan = self.columnspan, sticky = Tkinter.W )
 		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
 
 	def getFromName( self, name, repository ):
 		"Initialize."
+		self.columnspan = 3
 		self.name = name
 		self.repository = repository
 		repository.displayEntities.append(self)
@@ -1446,7 +1447,7 @@ class MenuButtonDisplay:
 
 	def getFromName( self, name, repository ):
 		"Initialize."
-		self.menuButtonColumnspan = 2
+		self.columnspan = 2
 		self.menuRadios = []
 		self.name = name
 		self.radioVar = None
@@ -1474,10 +1475,10 @@ class MenuButtonDisplay:
 		self.label = Tkinter.Label( gridPosition.master, text = self.name )
 		self.label.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
 		self.menuButton = Tkinter.OptionMenu( gridPosition.master, self.radioVar, self.optionList )
-		self.menuButton.grid( row = gridPosition.row, column = 3, columnspan = self.menuButtonColumnspan, sticky = Tkinter.W )
+		self.menuButton.grid( row = gridPosition.row, column = 3, columnspan = self.columnspan, sticky = Tkinter.W )
 		self.menuButton.menu = Tkinter.Menu( self.menuButton, tearoff = 0 )
 		self.menu = self.menuButton.menu
-		self.menuButton['menu']  =  self.menu
+		self.menuButton['menu'] = self.menu
 		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
 
 
@@ -1602,7 +1603,7 @@ class PluginFrame:
 		gridVertical.canvas['yscrollcommand'] = gridVertical.yScrollbar.set
 		gridVertical.canvas.create_window( 0, 0, anchor = Tkinter.NW, window = gridVertical.frameGridVertical.master )
 		gridVertical.canvas['scrollregion'] = gridVertical.frameGridVertical.master.grid_bbox()
-		gridVertical.canvas.grid( row = gridVertical.row, column = gridVertical.column, columnspan = 11, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
+		gridVertical.canvas.grid( row = gridVertical.row, column = gridVertical.column, columnspan = 12, sticky = Tkinter.E + Tkinter.W + Tkinter.N + Tkinter.S )
 		gridVertical.master.grid_rowconfigure( gridVertical.row, weight = 1 )
 		gridVertical.master.grid_columnconfigure( gridVertical.column + 11, weight = 1 )
 		gridVertical.frameGridVertical.master.lift()
@@ -1823,16 +1824,33 @@ class TextSetting( StringSetting ):
 	def addToDialog( self, gridPosition ):
 		"Add this to the dialog."
 		gridPosition.increment()
-		self.label = Tkinter.Label(gridPosition.master, text=self.name)
-		self.label.grid(row=gridPosition.row, column=0, columnspan=3, sticky=Tkinter.W)
+		self.label = Tkinter.Label( gridPosition.master, text = self.name )
+		self.label.grid( row = gridPosition.row, column = 0, columnspan = 3, sticky = Tkinter.W )
 		gridPosition.increment()
-		# An entry rather than a text is used because there is a weird bug that when a text is used in the first plugin displayed,
-		# the scrollbar is hidden in the analyze and craft frames.
-		self.entry = Tkinter.Entry(gridPosition.master)
+		self.entry = Tkinter.Text( gridPosition.master )
 		self.setStateToValue()
-		self.entry.grid(row=gridPosition.row, column=0, columnspan=5)
-		self.entry['width'] = 70
-		LabelHelp(self.repository.fileNameHelp, gridPosition.master, self.name, self.label)
+		self.entry.grid( row = gridPosition.row, column = 0, columnspan = 5, sticky = Tkinter.W )
+		LabelHelp( self.repository.fileNameHelp, gridPosition.master, self.name, self.label )
+
+	def getFromValue( self, name, repository, value ):
+		"Initialize."
+		self.getFromValueOnly( name, repository, value )
+		repository.displayEntities.append(self)
+		repository.preferences.append(self)
+		return self
+
+	def setStateToValue(self):
+		"Set the entry to the value."
+		try:
+			self.entry.delete( 1.0, Tkinter.END )
+			self.entry.insert( Tkinter.INSERT, self.value )
+		except:
+			pass
+
+	def setToDisplay(self):
+		"Set the string to the entry field."
+		valueString = self.entry.get( 1.0, Tkinter.END )
+		self.setValueToString( valueString )
 
 	def setValueToSplitLine( self, lineIndex, lines, splitLine ):
 		"Set the value to the second word of a split line."

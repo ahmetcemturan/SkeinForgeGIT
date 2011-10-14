@@ -231,16 +231,16 @@ import sys
 
 
 # document after hop, then comb, fill & home once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension
-# scrollbar/width problem when starting with narrow view like help, profile
+# Maximum Evalue before Reset
 # document announce Surrounding Angle up to 80
+# smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
 # interim release
 #
+# voronoi average location intersection looped inset intercircles
 # announce bookend / alteration, change alterations to (<alterationDeleteThisPrefix/>)
 # rename homing home
 # add volume fraction to fill, if there is no fill do not add fill
 #
-# smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
-# voronoi average location intersection looped inset intercircles
 # move dimension after unpause
 # announce analyzeGcode in export
 # release
@@ -565,9 +565,9 @@ class SkeinforgeRepository:
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge.html', self)
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Skeinforge', self, '')
 		self.profileType = settings.MenuButtonDisplay().getFromName('Profile Type: ', self )
-		self.profileType.menuButtonColumnspan = 6
+		self.profileType.columnspan = 6
 		self.profileSelection = settings.MenuButtonDisplay().getFromName('Profile Selection: ', self)
-		self.profileSelection.menuButtonColumnspan = 6
+		self.profileSelection.columnspan = 6
 		addToProfileMenu( self.profileSelection, self.profileType, self )
 		settings.LabelDisplay().getFromName('', self)
 		importantFileNames = ['craft', 'profile']

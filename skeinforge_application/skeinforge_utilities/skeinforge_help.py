@@ -27,7 +27,9 @@ class HelpRepository:
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_utilities.skeinforge_help.html', self)
-		settings.LabelDisplay().getFromName('- Announcements -', self )
+		announcementsText = '- Announcements -                                                                                                                          '
+		announcementsLabel = settings.LabelDisplay().getFromName(announcementsText, self )
+		announcementsLabel.columnspan = 6
 		settings.LabelDisplay().getFromName('Fabmetheus Blog, Announcements & Questions:', self )
 		settings.HelpPage().getFromNameAfterHTTP('fabmetheus.blogspot.com/', 'Fabmetheus Blog', self )
 		settings.LabelSeparator().getFromRepository(self)
@@ -48,8 +50,8 @@ class HelpRepository:
 		settings.HelpPage().getFromNameAfterHTTP('dev.forums.reprap.org/read.php?12,27562', 'Skeinforge Contributions Thread', self )
 		settings.LabelDisplay().getFromName('Skeinforge Settings Thread:', self )
 		settings.HelpPage().getFromNameAfterHTTP('dev.forums.reprap.org/read.php?12,27434', 'Skeinforge Settings Thread', self )
-		settings.LabelDisplay().getFromName('Skeinforge Troubleshooting Thread:', self )
-		settings.HelpPage().getFromNameAfterHTTP('forums.reprap.org/list.php?154', 'Skeinforge Troubleshooting Thread', self )
+		settings.LabelDisplay().getFromName('Skeinforge Troubleshooting Forum:', self)
+		settings.HelpPage().getFromNameAfterHTTP('forums.reprap.org/list.php?154', '    Skeinforge Troubleshooting Forum    ', self )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Search -', self )
 		settings.LabelDisplay().getFromName('Reprap Search:', self )
