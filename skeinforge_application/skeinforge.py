@@ -230,13 +230,16 @@ import os
 import sys
 
 
-# document after hop, then comb, fill & home once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension
-# Maximum Evalue before Reset
+# document hop sentence, after hop, then comb, fill & home once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension
+# document announce smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
+# eliminate (<infill>)(</infill>)
+# speed up skeinforge 3.99
+# see about clip meeting perimter on 0 layer
+# sponge
+# document announce Maximum E Value before Reset
 # document announce Surrounding Angle up to 80
-# smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
 # interim release
 #
-# voronoi average location intersection looped inset intercircles
 # announce bookend / alteration, change alterations to (<alterationDeleteThisPrefix/>)
 # rename homing home
 # add volume fraction to fill, if there is no fill do not add fill
@@ -254,6 +257,7 @@ import sys
 #
 #
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
+# voronoi average location intersection looped inset intercircles
 # skin layers without something over the infill
 # unpause slow flow rate instead of speeding feed rate
 # maybe in svgReader if loop intersection with previous union else add
@@ -278,6 +282,7 @@ import sys
 # think about rectangular getVector3RemoveByPre..
 # del previous, add begin & end if far  get actual path
 # linearbearingexample 15 x 1 x 2, linearbearingcage
+# move bridge to inset
 # remember xy in skeiniso
 # polling
 # connectionfrom, to, connect, xaxis

@@ -723,7 +723,7 @@ def getDistanceToPlaneSegment( segmentBegin, segmentEnd, point ):
 	interceptPerpendicular = segmentBegin + segmentDifference * intercept
 	return abs( point - interceptPerpendicular ) * abs( point - interceptPerpendicular )
 
-def getDotProduct( firstComplex, secondComplex ):
+def getDotProduct(firstComplex, secondComplex):
 	'Get the dot product of a pair of complexes.'
 	return firstComplex.real * secondComplex.real + firstComplex.imag * secondComplex.imag
 
@@ -1257,9 +1257,9 @@ def getNormalByPath(path):
 		totalNormal += getNormalWeighted(point, center, end)
 	return totalNormal.getNormalized()
 
-def getNormalized( complexNumber ):
+def getNormalized(complexNumber):
 	'Get the normalized complex.'
-	complexNumberLength = abs( complexNumber )
+	complexNumberLength = abs(complexNumber)
 	if complexNumberLength > 0.0:
 		return complexNumber / complexNumberLength
 	return complexNumber
