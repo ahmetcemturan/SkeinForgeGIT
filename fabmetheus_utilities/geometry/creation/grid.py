@@ -41,8 +41,7 @@ def getGeometryOutput(elementNode):
 	typeStringTwoCharacters = derivation.typeString.lower()[: 2]
 	typeStringFirstCharacter = typeStringTwoCharacters[: 1]
 	topRight = complex(derivation.demiwidth, derivation.demiheight)
-	bottomLeft = -topRight
-	loopsComplex = [euclidean.getSquareLoopWiddershins(bottomLeft, topRight)]
+	loopsComplex = [euclidean.getSquareLoopWiddershins(-topRight, topRight)]
 	if len(derivation.target) > 0:
 		loopsComplex = euclidean.getComplexPaths(derivation.target)
 	maximumComplex = euclidean.getMaximumByComplexPaths(loopsComplex)
@@ -154,8 +153,7 @@ class GridDerivation:
 	'Class to hold grid variables.'
 	def __init__(self, elementNode):
 		'Set defaults.'
-		self.inradius = lineation.getComplexByPrefixes(elementNode, ['demisize', 'inradius'], complex(10.0, 10.0))
-		self.inradius = lineation.getComplexByMultiplierPrefix(elementNode, 2.0, 'size', self.inradius)
+		self.inradius = lineation.getInradius(complex(10.0, 10.0), elementNode)
 		self.demiwidth = lineation.getFloatByPrefixBeginEnd(elementNode, 'demiwidth', 'width', self.inradius.real)
 		self.demiheight = lineation.getFloatByPrefixBeginEnd(elementNode, 'demiheight', 'height', self.inradius.imag)
 		self.packingDensity = evaluate.getEvaluatedFloatByKeys(0.2, elementNode, ['packingDensity', 'density'])

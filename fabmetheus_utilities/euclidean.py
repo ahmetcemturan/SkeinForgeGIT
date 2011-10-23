@@ -2323,6 +2323,8 @@ class NestedBand(NestedRing):
 
 	def transferInfillPaths(self, extrusionHalfWidth, oldOrderedLocation, skein, threadSequence):
 		'Transfer the infill paths.'
+		if len(self.infillBoundaries) == 0 and len(self.infillPaths) == 0:
+			return 
 		skein.distanceFeedRate.addLine('(<infill>)')
 		for infillBoundary in self.infillBoundaries:
 			skein.distanceFeedRate.addLine('(<infillBoundary>)')

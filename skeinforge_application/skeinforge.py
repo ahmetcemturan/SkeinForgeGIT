@@ -230,17 +230,16 @@ import os
 import sys
 
 
-# document hop sentence, after hop, then comb, fill & home once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension
+# document after lash, then comb, fill, home, inset once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension
+# sponge_section
+# evaluate_elements measure? getBottomLeft getTopRight getCenter getInradius getBoundingBox
+# _carve, inset in manipulation shapes
 # document announce smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
-# eliminate (<infill>)(</infill>)
-# speed up skeinforge 3.99
-# see about clip meeting perimter on 0 layer
-# sponge
 # document announce Maximum E Value before Reset
 # document announce Surrounding Angle up to 80
 # interim release
 #
-# announce bookend / alteration, change alterations to (<alterationDeleteThisPrefix/>)
+# announce bookend / alteration Replace Variable with Setting, change alterations to (<alterationDeleteThisPrefix/>)
 # rename homing home
 # add volume fraction to fill, if there is no fill do not add fill
 #
@@ -253,12 +252,14 @@ import sys
 # unimportant
 # minor outline problem when an end path goes through a path, like in the letter A
 # view profile 1 mm thickness
-# analyze doesn't save settings
+# analyze doesn't save skeinlayer settings
 #
 #
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
 # voronoi average location intersection looped inset intercircles
 # skin layers without something over the infill
+# move bridge to inset
+# check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # unpause slow flow rate instead of speeding feed rate
 # maybe in svgReader if loop intersection with previous union else add
 # set temperature in temperature
@@ -275,22 +276,20 @@ import sys
 # add fill in penultimate loops
 # maybe make vectorwrite prominent, not skeiniso, probably not because it doesn't work on Mac
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
-# hollow top
 # chamber: heated bed off at a layer http://blog.makerbot.com/2011/03/17/if-you-cant-stand-the-heat/
 # packingDensity or density in grid - probably just density
 # derivations for shapes
 # think about rectangular getVector3RemoveByPre..
 # del previous, add begin & end if far  get actual path
 # linearbearingexample 15 x 1 x 2, linearbearingcage
-# move bridge to inset
 # remember xy in skeiniso
 # polling
 # connectionfrom, to, connect, xaxis
+# getElementsByLocalName which is the equivalent of # getElementsByTagName
 # move replace from export to alterations
 # lathe, transform normal in getRemaining, getConnection
 # add overview link to crnsdoo index and svg page
 # getConnection of some kind like getConnectionVertexes, getConnection
-# getElementsByLocalName which is the equivalent of # getElementsByTagName
 # xml_creation
 # 'fileName, text, repository' commandLineInterface
 # delete: text = text.replace(('\nName                          %sValue\n' % globalSpreadsheetSeparator), ('\n_Name                          %sValue\n' % globalSpreadsheetSeparator))
@@ -304,11 +303,12 @@ import sys
 # combine xmlelement with csvelement using example.csv & geometry.csv, csv _format, _column, _row, _text
 # pixel, voxel, surfaxel/boxel, lattice, mesh
 # probably not replace getOverlapRatio with getOverlap if getOverlapRatio is never small, always 0.0
-# mesh. for cube, then cyliner, then sphere after lathe
+# mesh. for cube, then cylinder, then sphere after lathe
 # dimension extrude diameter, density
+# superformula http://www.thingiverse.com/thing:12419
 # maybe get rid of testLoops once they are no longer needed
 # thermistor lookup table
-# stretch add back addAlong
+# stretch maybe add back addAlong
 # import, write, copy examples
 # maybe remove default warnings from scale, rotate, translate, transform
 # easy helix
@@ -338,7 +338,6 @@ import sys
 # maybe add 1 to max layer input to iso in layer_template.svg
 # maybe save all generated_files option
 # table to dictionary
-# check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
 # remove cool set at end of layer
 # add fan on when hot in chamber
 # maybe measuring rod
@@ -363,15 +362,14 @@ import sys
 # somehow, add pattern to outside, http://blog.makerbot.com/2010/09/03/lampshades/
 # implement acceleration & collinear removal in penultimate viewers _extrusion
 #
-# rename skeinforge_profile.addListsToCraftTypeRepository to skeinforge_profile.addToCraftTypeRepository after apron
-# basic tool
+# rename skeinforge_profile.addListsToCraftTypeRepository to skeinforge_profile.addToCraftTypeRepository after skirt
+# basic basedit tool
 # arch, ceiling
 # meta setting, rename setting _setting
 # add polish, has perimeter, has cut first layer (False)
 # probably not set addedLocation in distanceFeedRate after arc move
 # maybe horizontal bridging and/or check to see if the ends are standing on anything
 # thin self? check when removing intersecting paths in inset
-# maybe later remove isPerimeterPathInSurroundLoops, once there are no weird fill bugs
 # save all analyze viewers of the same name except itself, update help menu self.wikiManualPrimary.setUpdateFunction
 # check alterations folder first, if there is something copy it to the home directory, if not check the home directory
 # add links to demozendium in help
@@ -404,7 +402,7 @@ import sys
 # move skeinforge_utilities to fabmetheus_utilities
 # maybe lathe cutting
 # maybe lathe extrusion
-# maybe lathe millng
+# maybe lathe milling
 # maybe lathe winding & weaving
 #
 #

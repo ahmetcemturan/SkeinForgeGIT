@@ -135,9 +135,14 @@ def getGeometryOutputByManipulation(elementNode, sideLoop):
 	sideLoop.loop = euclidean.getLoopWithoutCloseSequentialPoints( sideLoop.close, sideLoop.loop )
 	return sideLoop.getManipulationPluginLoops(elementNode)
 
-def getMinimumRadius( beginComplexSegmentLength, endComplexSegmentLength, radius ):
+def getInradius(defaultInradius, elementNode):
+	'Get inradius.'
+	defaultInradius = getComplexByPrefixes(elementNode, ['demisize', 'inradius'], defaultInradius)
+	return getComplexByMultiplierPrefix(elementNode, 2.0, 'size', defaultInradius)
+
+def getMinimumRadius(beginComplexSegmentLength, endComplexSegmentLength, radius):
 	'Get minimum radius.'
-	return min( abs(radius), 0.5 * min( beginComplexSegmentLength, endComplexSegmentLength ) )
+	return min(abs(radius), 0.5 * min(beginComplexSegmentLength, endComplexSegmentLength))
 
 def getNewDerivation(elementNode):
 	'Get new derivation.'

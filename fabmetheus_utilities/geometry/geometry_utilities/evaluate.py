@@ -644,7 +644,7 @@ def getRadiusArealizedBasedOnAreaRadius(elementNode, radius, sides):
 
 def getSidesBasedOnPrecision(elementNode, radius):
 	'Get the number of polygon sides.'
-	return int(math.ceil(math.sqrt(0.5 * radius * math.pi * math.pi / setting.getPrecision(elementNode))))
+	return int(math.ceil(math.sqrt(0.5 * radius / setting.getPrecision(elementNode)) * math.pi))
 
 def getSidesMinimumThreeBasedOnPrecision(elementNode, radius):
 	'Get the number of polygon sides, with a minimum of three.'

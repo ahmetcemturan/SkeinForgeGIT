@@ -192,18 +192,15 @@ class PrefaceSkein:
 		if self.repository.turnExtruderOffAtShutDown.value:
 			self.distanceFeedRate.addLine('M103') # Turn extruder motor off.
 
-	def addToolSettingLines(self, toolName):
+	def addToolSettingLines(self, pluginName):
 		"Add tool setting lines."
-		craftModule = skeinforge_craft.getCraftModule(toolName)
-		preferences = settings.getReadRepository(craftModule.getNewRepository()).preferences
-		for preference in preferences:
-			if preference.name.startswith('Activate %s' % toolName.capitalize()):
-				if preference.value == False:
-					return
+		preferences = skeinforge_craft.getCraftPreferences(pluginName)
+		if skeinforge_craft.getCraftValue('Activate %s' % pluginName.capitalize(), preferences) != True:
+			return
 		for preference in preferences:
 			valueWithoutReturn = str(preference.value).replace('\n', ' ').replace('\r', ' ')
 			if preference.name != 'WindowPosition' and not preference.name.startswith('Open File'):
-				line = '%s %s %s' % (toolName, preference.name.replace(' ', '_'), valueWithoutReturn)
+				line = '%s %s %s' % (pluginName, preference.name.replace(' ', '_'), valueWithoutReturn)
 				self.distanceFeedRate.addTagBracketedLine('setting', line)
 
 	def getCraftedGcode( self, repository, gcodeText ):

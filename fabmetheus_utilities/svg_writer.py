@@ -216,7 +216,7 @@ class SVGWriter:
 		volume = 0.0
 		for rotatedLoopLayer in rotatedLoopLayers:
 			volume += euclidean.getAreaLoops(rotatedLoopLayer.loops)
-		volume *= 0.001
+		volume *= 0.001 * self.layerThickness
 		self.setTexts('volume', 'Volume: %s cm3' % self.getRounded(volume))
 		if not self.addLayerTemplateToSVG:
 			self.svgElement.getFirstChildByLocalName('script').removeFromIDNameParent()

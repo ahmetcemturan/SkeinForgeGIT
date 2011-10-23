@@ -89,6 +89,7 @@ class BookendRepository:
 		self.activateBookend = settings.BooleanSetting().getFromValue('Activate Bookend', self, True)
 		self.nameOfEndFile = settings.StringSetting().getFromValue('Name of End File:', self, 'end.gcode')
 		self.nameOfStartFile = settings.StringSetting().getFromValue('Name of Start File:', self, 'start.gcode')
+		self.replaceVariableWithSetting = settings.BooleanSetting().getFromValue('Replace Variable with Setting', self, True)
 		self.executeTitle = 'Bookend'
 
 	def execute(self):
@@ -104,14 +105,21 @@ class BookendSkein:
 		'Initialize.'
  		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.lineIndex = 0
+		self.settingDictionary = None
 
 	def addFromUpperLowerFile(self, fileName):
 		"Add lines of text from the fileName or the lowercase fileName, if there is no file by the original fileName in the directory."
-		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(settings.getAlterationFileLines(fileName))
+		alterationFileLines = settings.getAlterationFileLines(fileName)
+		if self.settingDictionary != None:
+			for alterationFileLineIndex, alterationFileLine in enumerate(alterationFileLines):
+				alterationFileLines[alterationFileLineIndex] = self.getReplacedAlterationLine(alterationFileLine)
+		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(alterationFileLines)
 
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the bevel gcode."
 		self.lines = archive.getTextLines(gcodeText)
+		if repository.replaceVariableWithSetting.value:
+			self.setSettingDictionary()
 		self.addFromUpperLowerFile(repository.nameOfStartFile.value) # Add a start file if it exists.
 		self.parseInitialization()
 		for self.lineIndex in xrange(self.lineIndex, len(self.lines)):
@@ -119,6 +127,23 @@ class BookendSkein:
 			self.distanceFeedRate.addLine(line)
 		self.addFromUpperLowerFile(repository.nameOfEndFile.value) # Add an end file if it exists.
 		return self.distanceFeedRate.output.getvalue()
+
+	def getReplacedAlterationLine(self, alterationFileLine, searchIndex=0):
+		'Get the alteration file line with variables replaced with the settings.'
+		settingIndex = alterationFileLine.find('setting.', searchIndex)
+		beginIndex = settingIndex - 1
+		if beginIndex < 0:
+			return alterationFileLine
+		endBracketIndex = alterationFileLine.find('>', settingIndex)
+		if alterationFileLine[beginIndex] != '<' or endBracketIndex == -1:
+			return alterationFileLine
+		endIndex = endBracketIndex + 1
+		innerToken = alterationFileLine[settingIndex + len('setting.'): endIndex].replace('>', '').replace(' ', '').replace('_', '').lower()
+		if innerToken in self.settingDictionary:
+			replacedSetting = self.settingDictionary[innerToken]
+			replacedAlterationLine = alterationFileLine[: beginIndex] + replacedSetting + alterationFileLine[endIndex :]
+			return self.getReplacedAlterationLine(replacedAlterationLine, beginIndex + len(replacedSetting))
+		return alterationFileLine
 
 	def parseInitialization(self):
 		'Parse gcode initialization and store the parameters.'
@@ -131,7 +156,24 @@ class BookendSkein:
 				self.distanceFeedRate.addTagBracketedProcedure('bookend')
 				return
 			self.distanceFeedRate.addLine(line)
-		
+
+	def setSettingDictionary(self):
+		'Set the setting dictionary from the gcode text.'
+		for line in self.lines:
+			splitLine = gcodec.getSplitLineBeforeBracketSemicolon(line)
+			firstWord = gcodec.getFirstWord(splitLine)
+			if firstWord == '(<setting>' and self.settingDictionary != None:
+				if len(splitLine) > 4:
+					procedure = splitLine[1]
+					name = splitLine[2].replace('_', ' ').replace(' ', '')
+					if '(' in name:
+						name = name[: name.find('(')]
+					value = ' '.join(splitLine[3 : -1])
+					self.settingDictionary[(procedure + '.' + name).lower()] = value
+			elif firstWord == '(<settings>)':
+				self.settingDictionary = {}
+			elif firstWord == '(</settings>)':
+				return
 
 
 def main():

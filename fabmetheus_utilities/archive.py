@@ -18,7 +18,7 @@ __date__ = '$Date: 2008/02/05 $'
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 
 
-globalTemporarySettingsPath = os.path.join(os.path.expanduser('~'), '.skeinforge')#todo (os.getcwd(), 'sfact_profiles')
+globalTemporarySettingsPath = os.path.join(os.path.expanduser('~'), '.skeinforge')
 
 
 def addToNamePathDictionary(directoryPath, namePathDictionary):
@@ -41,6 +41,10 @@ def getAbsoluteFrozenFolderPath(filePath, folderName=''):
 			filePath = ''.join(filePath.rpartition('\\')[: 2])
 		filePath = os.path.join(filePath, 'skeinforge_application')
 	return getAbsoluteFolderPath(filePath, folderName)
+
+def getAnalyzePluginsDirectoryPath(subName=''):
+	'Get the analyze plugins directory path.'
+	return getJoinedPath(getSkeinforgePluginsPath('analyze_plugins'), subName)
 
 def getCraftPluginsDirectoryPath(subName=''):
 	'Get the craft plugins directory path.'

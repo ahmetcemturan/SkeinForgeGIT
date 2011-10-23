@@ -147,7 +147,7 @@ def getCubicPoints( begin, controlPoints, end, numberOfBezierPoints=globalNumber
 	return cubicPoints
 
 def getFontReader(fontFamily):
-	"Get the font reader for the fontFamily."
+	'Get the font reader for the fontFamily.'
 	fontLower = fontFamily.lower().replace(' ', '_')
 	global globalFontReaderDictionary
 	if fontLower in globalFontReaderDictionary:
@@ -156,7 +156,11 @@ def getFontReader(fontFamily):
 	if globalFontFileNames == None:
 		globalFontFileNames = archive.getFileNamesByFilePaths(archive.getFilePathsByDirectory(getFontsDirectoryPath()))
 	if fontLower not in globalFontFileNames:
-		print('Warning, the %s font was not found in the fonts folder, so Gentium Basic Regular will be substituted.' % fontFamily)
+		print('Warning, the %s font was not found in the fabmetheus_utilities/fonts folder, so Gentium Basic Regular will be substituted.' % fontFamily)
+		print('The available fonts are:')
+		globalFontFileNames.sort()
+		print(globalFontFileNames)
+		print('')
 		fontLower = 'gentium_basic_regular'
 	fontReader = FontReader(fontLower)
 	globalFontReaderDictionary[fontLower] = fontReader

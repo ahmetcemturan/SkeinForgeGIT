@@ -365,11 +365,11 @@ def comparePointIndexDescending(self, other):
 		return 1
 	return 0
 
-def createExtraFillLoops(nestedRing, radius, shouldExtraLoopsBeAdded):
+def createExtraFillLoops(nestedRing, radius, radiusAround, shouldExtraLoopsBeAdded):
 	'Create extra fill loops.'
 	for innerNestedRing in nestedRing.innerNestedRings:
-		createFillForSurroundings(innerNestedRing.innerNestedRings, radius, shouldExtraLoopsBeAdded)
-	allFillLoops = getExtraFillLoops(nestedRing.getLoopsToBeFilled(), radius)
+		createFillForSurroundings(innerNestedRing.innerNestedRings, radius, radiusAround, shouldExtraLoopsBeAdded)
+	allFillLoops = intercircle.getInsetSeparateLoopsFromAroundLoops(nestedRing.getLoopsToBeFilled(), radius, max(1.4 * radius, radiusAround))
 	if len(allFillLoops) < 1:
 		return
 	if shouldExtraLoopsBeAdded:
@@ -377,10 +377,10 @@ def createExtraFillLoops(nestedRing, radius, shouldExtraLoopsBeAdded):
 		nestedRing.penultimateFillLoops = nestedRing.lastFillLoops
 	nestedRing.lastFillLoops = allFillLoops
 
-def createFillForSurroundings(nestedRings, radius, shouldExtraLoopsBeAdded):
+def createFillForSurroundings(nestedRings, radius, radiusAround, shouldExtraLoopsBeAdded):
 	'Create extra fill loops for nested rings.'
 	for nestedRing in nestedRings:
-		createExtraFillLoops(nestedRing, radius, shouldExtraLoopsBeAdded)
+		createExtraFillLoops(nestedRing, radius, radiusAround, shouldExtraLoopsBeAdded)
 
 def getAdditionalLength( path, point, pointIndex ):
 	'Get the additional length added by inserting a point into a path.'
@@ -415,21 +415,6 @@ def getCraftedTextFromText(gcodeText, repository=None):
 	if not repository.activateFill.value:
 		return gcodeText
 	return FillSkein().getCraftedGcode( repository, gcodeText )
-
-def getExtraFillLoops(loops, radius):
-	'Get extra loops between inside and outside loops.'
-	if radius == 0.0:
-		return loops
-	greaterThanRadius = 1.4 * radius
-	extraFillLoops = []
-	centers = intercircle.getCentersFromPoints(intercircle.getPointsFromLoops(loops, greaterThanRadius), greaterThanRadius)
-	for center in centers:
-		inset = intercircle.getSimplifiedInsetFromClockwiseLoop(center, radius)
-		if intercircle.isLargeSameDirection(inset, center, radius):
-			if euclidean.getIsInFilledRegion(loops, euclidean.getLeftPoint(inset)):
-				inset.reverse()
-				extraFillLoops.append(inset)
-	return extraFillLoops
 
 def getKeyIsInPixelTableAddValue( key, pathIndexTable, pixelTable ):
 	'Determine if the key is in the pixel table, and if it is and if the value is not None add it to the path index table.'
@@ -897,11 +882,10 @@ class FillSkein:
 			else:
 				self.isJunctionWide = False
 		nestedRings = euclidean.getOrderedNestedRings(rotatedLayer.nestedRings)
-#		if isPerimeterPathInSurroundLoops( nestedRings ):
-#			extraShells = 0
-		createFillForSurroundings(nestedRings, layerPerimeterMinusHalfInfillWidth, False)
+		radiusAround = 0.5 * min(self.infillWidth, self.perimeterWidth)
+		createFillForSurroundings(nestedRings, layerPerimeterMinusHalfInfillWidth, radiusAround, False)
 		for extraShellIndex in xrange(extraShells):
-			createFillForSurroundings(nestedRings, self.layerInfillWidth, True)
+			createFillForSurroundings(nestedRings, self.layerInfillWidth, radiusAround, True)
 		fillLoops = euclidean.getFillOfSurroundings(nestedRings, None)
 		rotatedLoops = euclidean.getRotatedComplexLists(reverseRotation, fillLoops)
 		infillDictionary = triangle_mesh.getInfillDictionary(

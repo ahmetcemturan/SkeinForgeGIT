@@ -279,8 +279,6 @@ def writeOutput(fileName, shouldAnalyze=True):
 	if repository.addProfileExtension.value:
 		fileNameSuffix += '.' + getFirstValue(gcodeText, '(<profileName>')
 	if repository.addDescriptiveExtension.value:
-		print(  'getDescriptiveExtension(gcodeText)')
-		print(  getDescriptiveExtension(gcodeText))
 		fileNameSuffix += getDescriptiveExtension(gcodeText)
 	if repository.addTimestampExtension.value:
 		fileNameSuffix += '.' + getFirstValue(gcodeText, '(<timeStampPreface>')

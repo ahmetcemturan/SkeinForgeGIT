@@ -38,7 +38,7 @@ def getGeometryOutputBySVGReader(elementNode, svgReader):
 	for rotatedLoopLayer in svgReader.rotatedLoopLayers:
 		for loop in rotatedLoopLayer.loops:
 			vector3Path = euclidean.getVector3Path(loop, rotatedLoopLayer.z)
-			sideLoop = lineation.SideLoop(vector3Path, None, None)
+			sideLoop = lineation.SideLoop(vector3Path)
 			sideLoop.rotate(elementNode)
 			geometryOutput += lineation.getGeometryOutputByManipulation(elementNode, sideLoop)
 	return geometryOutput

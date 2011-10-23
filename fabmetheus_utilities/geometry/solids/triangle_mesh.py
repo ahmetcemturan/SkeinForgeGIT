@@ -189,7 +189,7 @@ def addSymmetricYPaths(outputs, paths, y):
 
 def addWithLeastLength(importRadius, loops, point):
 	'Insert a point into a loop, at the index at which the loop would be shortest.'
-	close = 1.65 * importRadius #todo a bit over the experimental minimum additional loop length to restore a right angle
+	close = 1.65 * importRadius # a bit over the experimental minimum additional loop length to restore a right angle
 	shortestAdditionalLength = close
 	shortestLoop = None
 	shortestPointIndex = None
