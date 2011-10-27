@@ -230,10 +230,11 @@ import os
 import sys
 
 
-# document after lash, then comb, fill, home, inset once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension
-# sponge_section
-# evaluate_elements measure? getBottomLeft getTopRight getCenter getInradius getBoundingBox
-# _carve, inset in manipulation shapes
+# document after stretch, then comb, fill, home, inset, oozebane, raft, splodge, temperature once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension  http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge
+# make link to only troubleshooting forum
+# move bridge to inset, consolidate _carve
+# _carve print zone print slices
+# move inset to manipulation shapes
 # document announce smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
 # document announce Maximum E Value before Reset
 # document announce Surrounding Angle up to 80
@@ -256,13 +257,13 @@ import sys
 #
 #
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
+# set temperature in temperature
 # voronoi average location intersection looped inset intercircles
 # skin layers without something over the infill
-# move bridge to inset
 # check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
+# backup demozendium links
 # unpause slow flow rate instead of speeding feed rate
 # maybe in svgReader if loop intersection with previous union else add
-# set temperature in temperature
 # add links download manual svg_writer, add left right arrow keys to layer
 # infuse _extrusion
 # cutting ahmet
@@ -279,6 +280,7 @@ import sys
 # chamber: heated bed off at a layer http://blog.makerbot.com/2011/03/17/if-you-cant-stand-the-heat/
 # packingDensity or density in grid - probably just density
 # derivations for shapes
+# profile copy / rename   /   delete, maybe move craft type to profile
 # think about rectangular getVector3RemoveByPre..
 # del previous, add begin & end if far  get actual path
 # linearbearingexample 15 x 1 x 2, linearbearingcage
@@ -290,6 +292,8 @@ import sys
 # lathe, transform normal in getRemaining, getConnection
 # add overview link to crnsdoo index and svg page
 # getConnection of some kind like getConnectionVertexes, getConnection
+# incorporate actual thickness from feed rate and flow rate in statistics for dimension
+# update stretch pictures By design, distance between parallel sides in hexagonal hole are 13mm, 7mm, 6.5mm, round hole diameter's are 8mm, 4mm and 3mm. http://fabmetheus.crsndoo.com/wiki/images/Stretch.png http://fabmetheus.crsndoo.com/wiki/images/thumb/NormalHole.png/180px-NormalHole.png http://fabmetheus.crsndoo.com/wiki/images/thumb/StretchDeformedHole.png/180px-StretchDeformedHole.png
 # xml_creation
 # 'fileName, text, repository' commandLineInterface
 # delete: text = text.replace(('\nName                          %sValue\n' % globalSpreadsheetSeparator), ('\n_Name                          %sValue\n' % globalSpreadsheetSeparator))

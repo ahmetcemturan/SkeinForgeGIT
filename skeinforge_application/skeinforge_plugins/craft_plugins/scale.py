@@ -3,10 +3,14 @@
 This page is in the table of contents.
 Scale scales the carving to compensate for shrinkage after the extrusion has cooled.
 
+The scale manual page is at:
+
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Scale
+
 It is best to only change the XY Plane Scale, because that does not affect other variables.  If you choose to change the Z Axis Scale, that increases the layer thickness so you must increase the feed rate in speed by the same amount and maybe some other variables which depend on layer thickness.
 
 ==Operation==
-The default 'Activate Scale' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
+The default 'Activate Scale' checkbox is off.  When it is on, the functions described below will work, when it is off, nothing will be done.
 
 ==Settings==
 ===XY Plane Scale===
@@ -17,7 +21,7 @@ Defines the amount the xy plane of the carving will be scaled.  The xy coordinat
 ===Z Axis Scale===
 Default is one.
 
-Defines the amount the z axis of the carving will be scaled.  The default is one because changing this changes many variables related to the layer thickness.  For example, the feedRate should be multiplied by the Z Axis Scale because the layers would be farther apart..
+Defines the amount the z axis of the carving will be scaled.  The default is one because changing this changes many variables related to the layer thickness.  For example, the feedRate should be multiplied by the Z Axis Scale because the layers would be farther apart.
 
 ===SVG Viewer===
 Default is webbrowser.
@@ -103,6 +107,7 @@ class ScaleRepository:
 		"Set the default settings, execute title & settings fileName."
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.scale.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName(fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Scale', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Scale')
 		self.activateScale = settings.BooleanSetting().getFromValue('Activate Scale', self, False)
 		self.xyPlaneScale = settings.FloatSpin().getFromValue(0.99, 'XY Plane Scale (ratio):', self, 1.03, 1.01)
 		self.zAxisScale = settings.FloatSpin().getFromValue(0.99, 'Z Axis Scale (ratio):', self, 1.02, 1.0)

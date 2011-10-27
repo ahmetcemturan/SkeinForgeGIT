@@ -13,7 +13,7 @@
 <a href="skeinforge_application.skeinforge_plugins.craft_plugins.smooth.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.splodge.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Speed is a script to set the feed rate, and flow rate.<br>
+Speed is a plugin to set the feed rate and flow rate.<br>
  <br>
 The speed manual page is at:<br>
 <a href="http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Speed">http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Speed</a><br>
@@ -41,7 +41,7 @@ The speed manual page is at:<br>
 <a name="Operation" id="Operation"></a><h2>Operation</h2>
 <hr>
 
-The default 'Activate Speed' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.  The speed script sets the feed rate, and flow rate.<br>
+The default 'Activate Speed' checkbox is on.  When it is on, the functions described below will work, when it is off, nothing will be done.<br>
  <br>
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
@@ -58,13 +58,13 @@ When selected, the flow rate will be added to the gcode.<br>
 
 Default is one.<br>
  <br>
-Defines the ratio of the feed rate on the bridge layers over the feed rate of the typical non bridge layers.<br>
+Defines the ratio of the feed rate (head speed) on the bridge layers over the feed rate of the typical non bridge layers.<br>
  <br>
 <a name="Bridge Flow Rate Multiplier" id="Bridge Flow Rate Multiplier"></a><h4>Bridge Flow Rate Multiplier</h4>
 
 Default is one.<br>
  <br>
-Defines the ratio of the flow rate on the bridge layers over the flow rate of the typical non bridge layers.<br>
+Defines the ratio of the flow rate (extruder speed) on the bridge layers over the flow rate of the typical non bridge layers.<br>
  <br>
 <a name="Duty Cyle" id="Duty Cyle"></a><h3>Duty Cyle</h3>
 
@@ -84,7 +84,7 @@ Defines the duty cycle of the stepper motor pulse width modulation by adding an 
 
 Default is sixteen millimeters per second.<br>
  <br>
-Defines the operating feed rate.<br>
+Defines the operating feed rate, the speed your printing head moves in XY plane, before any modifiers.<br>
  <br>
 <a name="Flow Rate Setting" id="Flow Rate Setting"></a><h3>Flow Rate Setting</h3>
 
@@ -92,40 +92,44 @@ Default is 210.<br>
  <br>
 Defines the operating flow rate.<br>
  <br>
+RapMan uses this parameter to define the RPM of the extruder motor.  The extruder motor RPM is flow rate / 10 so if your flow rate is 150.0 that will set the extruder stepper to run at 15 RPM, different printers might read this value differently.<br>
+ <br>
 <a name="Orbital Feed Rate over Operating Feed Rate" id="Orbital Feed Rate over Operating Feed Rate"></a><h3>Orbital Feed Rate over Operating Feed Rate</h3>
 
 Default is 0.5.<br>
  <br>
-Defines the speed of the orbit compared to the operating extruder speed.  If you want the orbit to be very short, set the "Orbital Feed Rate over Operating Feed Rate" setting to a low value like 0.1.<br>
+Defines the speed when the head is orbiting compared to the operating extruder speed.  If you want the orbit to be very short, set the "Orbital Feed Rate over Operating Feed Rate" setting to a low value like 0.1.<br>
  <br>
 <a name="Maximum Z Feed Rate" id="Maximum Z Feed Rate"></a><h3>Maximum Z Feed Rate</h3>
 
 Default is one millimeter per second.<br>
  <br>
-Defines the maximum speed that the tool head will move in the z direction.  Also defines the speed of a vertical hop, like the infill hop in skin.<br>
+Defines the speed of a vertical hop, like the infill hop in skin.  Also, if the Limit plugin is activated, it will limit the maximum speed of the tool head in the z direction to this value.<br>
  <br>
 <a name="Perimeter" id="Perimeter"></a><h3>Perimeter</h3>
 
-To have higher build quality on the outside at the expense of slower build speed, a typical setting for the 'Perimeter Feed Rate over Operating Feed Rate' would be 0.5.  To go along with that, if you are using a speed controlled extruder, the 'Perimeter Flow Rate over Operating Flow Rate' should also be 0.5.  If you are using Pulse Width Modulation to control the speed, then you'll probably need a slightly higher ratio because there is a minimum voltage 'Flow Rate PWM Setting' required for the extruder motor to turn.  The flow rate PWM ratio would be determined by trial and error, with the first trial being:<br>
-Perimeter Flow Rate over Operating Flow Rate ~ Perimeter Feed Rate over Operating Feed Rate * ( Flow Rate PWM Setting - Minimum Flow Rate PWM Setting ) + Minimum Flow Rate PWM Setting<br>
+To have higher build quality on the outside at the expense of slower build speed, a typical setting for the 'Perimeter Feed Rate over Operating Feed Rate' would be 0.5.  To go along with that, if you are using a speed controlled extruder like a stepper extruder, the 'Perimeter Flow Rate over Operating Flow Rate' should also be 0.5.<br>
+ <br>
+A stepper motor is the best way of driving the extruder; however, if you are stuck with a DC motor extruder using Pulse Width Modulation to control the speed, then you'll probably need a slightly higher ratio because there is a minimum voltage 'Flow Rate PWM Setting' required for the extruder motor to turn.  The flow rate PWM ratio would be determined by trial and error, with the first trial being:<br>
+Perimeter Flow Rate over Operating Flow Rate ~ Perimeter Feed Rate over Operating Feed Rate * (Flow Rate PWM Setting - Minimum Flow Rate PWM Setting) + Minimum Flow Rate PWM Setting<br>
  <br>
 <a name="Perimeter Feed Rate over Operating Feed Rate" id="Perimeter Feed Rate over Operating Feed Rate"></a><h4>Perimeter Feed Rate over Operating Feed Rate</h4>
 
 Default is one.<br>
  <br>
-Defines the ratio of the feed rate of the perimeter over the feed rate of the infill.<br>
+Defines the ratio of the feed rate of the perimeter (outside shell) over the feed rate of the infill.  If you for example set this to 0.8 you will have a "stronger" outside edge than inside extrusion as the outside edge will be printed slower hence better lamination will occur and more filament will be placed there.<br>
  <br>
 <a name="Perimeter Flow Rate over Operating Feed Rate" id="Perimeter Flow Rate over Operating Feed Rate"></a><h4>Perimeter Flow Rate over Operating Feed Rate</h4>
 
 Default is one.<br>
  <br>
-Defines the ratio of the flow rate of the perimeter over the flow rate of the infill.<br>
+Defines the ratio of the flow rate of the perimeter (outside shell) over the flow rate of the infill.  If you want same thickness of the perimeter but better lamination you need to compensate for the slower feed rate by slowing down the flow rate, but all combinations are possible for different results.<br>
  <br>
 <a name="Travel Feed Rate" id="Travel Feed Rate"></a><h3>Travel Feed Rate</h3>
 
 Default is sixteen millimeters per second.<br>
  <br>
-Defines the feed rate when the extruder is off.  The 'Travel Feed Rate' could be set as high as the extruder can be moved, it is not limited by the maximum extrusion rate.<br>
+Defines the feed rate when the extruder is off (not printing).  The 'Travel Feed Rate' could be set as high as the extruder can be moved, it is not limited by the maximum extrusion rate.<br>
  <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>

@@ -1,11 +1,10 @@
 #! /usr/bin/env python
 """
 This page is in the table of contents.
+This plugin limits the feed rate of the tool head, so that the stepper motors are not driven too fast and skip steps.
 
 The limit manual page is at:
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Limit
-
-This plugin limits the feed rate of the tool head, so that the stepper motors are not driven too fast and skip steps.
 
 The maximum z feed rate is defined in speed.
 

@@ -47,6 +47,18 @@ def getEmptyZLoops(archivableObjects, importRadius, shouldPrintWarning, z, zoneA
 			print(z)
 	return loops
 
+def getLoopLayers(archivableObjects, importRadius, layerThickness, maximumZ, minimumZ, shouldPrintWarning, zoneArrangement):
+	'Get loop layers.'
+	loopLayers = []
+	z = minimumZ + 0.5 * layerThickness
+	while z < maximumZ:
+		settings.printProgress(len(loopLayers), 'slice')
+		loopLayer = euclidean.LoopLayer(z)
+		loopLayers.append(loopLayer)
+		loopLayer.loops = getEmptyZLoops(archivableObjects, importRadius, True, z, zoneArrangement)
+		z += layerThickness
+	return loopLayers
+
 def getMinimumZ(geometryObject):
 	'Get the minimum of the minimum z of the archivableObjects and the object.'
 	booleanGeometry = BooleanGeometry()

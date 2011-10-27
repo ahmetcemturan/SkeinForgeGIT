@@ -481,14 +481,14 @@ def getBooleanFromValue(value):
 
 def getBottomByPath(path):
 	'Get the bottom of the path.'
-	bottom = 987654321.0
+	bottom = 987654321987654321.0
 	for point in path:
 		bottom = min(bottom, point.z)
 	return bottom
 
 def getBottomByPaths(paths):
 	'Get the bottom of the paths.'
-	bottom = 987654321.0
+	bottom = 987654321987654321.0
 	for path in paths:
 		for point in path:
 			bottom = min(bottom, point.z)
@@ -817,6 +817,13 @@ def getFillOfSurroundings(nestedRings, penultimateFillLoops):
 		fillOfSurroundings += nestedRing.getFillLoops(penultimateFillLoops)
 	return fillOfSurroundings
 
+def getFlattenedNestedRings(nestedRings):
+	'Get flattened nested rings.'
+	flattenedNestedRings = []
+	for nestedRing in nestedRings:
+		nestedRing.addFlattenedNestedRings(flattenedNestedRings)
+	return flattenedNestedRings
+
 def getFloatDefaultByDictionary( defaultFloat, dictionary, key ):
 	'Get the value as a float.'
 	evaluatedFloat = None
@@ -1139,14 +1146,14 @@ def getMaximum(firstComplex, secondComplex):
 
 def getMaximumByComplexPath(path):
 	'Get a complex with each component the maximum of the respective components of a complex path.'
-	maximum = complex(-987654321.0, -987654321.0)
+	maximum = complex(-987654321987654321.0, -987654321987654321.0)
 	for point in path:
 		maximum = getMaximum(maximum, point)
 	return maximum
 
 def getMaximumByComplexPaths(paths):
 	'Get a complex with each component the maximum of the respective components of complex paths.'
-	maximum = complex(-987654321.0, -987654321.0)
+	maximum = complex(-987654321987654321.0, -987654321987654321.0)
 	for path in paths:
 		for point in path:
 			maximum = getMaximum(maximum, point)
@@ -1154,14 +1161,14 @@ def getMaximumByComplexPaths(paths):
 
 def getMaximumByVector3Path(path):
 	'Get a vector3 with each component the maximum of the respective components of a vector3 path.'
-	maximum = Vector3(-987654321.0, -987654321.0, -987654321.0)
+	maximum = Vector3(-987654321987654321.0, -987654321987654321.0, -987654321987654321.0)
 	for point in path:
 		maximum.maximize(point)
 	return maximum
 
 def getMaximumByVector3Paths(paths):
 	'Get a complex with each component the maximum of the respective components of a complex path.'
-	maximum = Vector3(-987654321.0, -987654321.0, -987654321.0)
+	maximum = Vector3(-987654321987654321.0, -987654231987654321.0, -987654321987654321.0)
 	for path in paths:
 		for point in path:
 			maximum.maximize(point)
@@ -1178,14 +1185,14 @@ def getMinimum(firstComplex, secondComplex):
 
 def getMinimumByComplexPath(path):
 	'Get a complex with each component the minimum of the respective components of a complex path.'
-	minimum = complex(987654321.0, 987654321.0)
+	minimum = complex(987654321987654321.0, 987654321987654321.0)
 	for point in path:
 		minimum = getMinimum(minimum, point)
 	return minimum
 
 def getMinimumByComplexPaths(paths):
 	'Get a complex with each component the minimum of the respective components of complex paths.'
-	minimum = complex(987654321.0, 987654321.0)
+	minimum = complex(987654321987654321.0, 987654321987654321.0)
 	for path in paths:
 		for point in path:
 			minimum = getMinimum(minimum, point)
@@ -1193,14 +1200,14 @@ def getMinimumByComplexPaths(paths):
 
 def getMinimumByVector3Path(path):
 	'Get a vector3 with each component the minimum of the respective components of a vector3 path.'
-	minimum = Vector3(987654321.0, 987654321.0, 987654321.0)
+	minimum = Vector3(987654321987654321.0, 987654321987654321.0, 987654321987654321.0)
 	for point in path:
 		minimum.minimize(point)
 	return minimum
 
 def getMinimumByVector3Paths(paths):
 	'Get a complex with each component the minimum of the respective components of a complex path.'
-	minimum = Vector3(987654321.0, 987654321.0, 987654321.0)
+	minimum = Vector3(987654321987654321.0, 987654321987654321.0, 987654321987654321.0)
 	for path in paths:
 		for point in path:
 			minimum.minimize(point)
@@ -1595,14 +1602,14 @@ def getThreeSignificantFigures(number):
 
 def getTopPath(path):
 	'Get the top of the path.'
-	top = -987654321.0
+	top = -987654321987654321.0
 	for point in path:
 		top = max(top, point.z)
 	return top
 
 def getTopPaths(paths):
 	'Get the top of the paths.'
-	top = -987654321.0
+	top = -987654321987654321.0
 	for path in paths:
 		for point in path:
 			top = max(top, point.z)
@@ -2181,12 +2188,13 @@ class Endpoint:
 class LoopLayer:
 	'Loops with a z.'
 	def __init__(self, z):
+		'Initialize.'
 		self.loops = []
 		self.z = z
 
 	def __repr__(self):
 		'Get the string representation of this loop layer.'
-		return '%s, %s' % ( self.z, self.loops )
+		return '%s, %s' % (self.z, self.loops)
 
 
 class NestedRing:
@@ -2493,13 +2501,6 @@ class RotatedLoopLayer:
 			raisedRotatedLoopLayer.loops.append( loop[:] )
 		raisedRotatedLoopLayer.rotation = self.rotation
 		return raisedRotatedLoopLayer
-
-def getFlattenedNestedRings(nestedRings):
-	'Get flattened nested rings.'
-	flattenedNestedRings = []
-	for nestedRing in nestedRings:
-		nestedRing.addFlattenedNestedRings(flattenedNestedRings)
-	return flattenedNestedRings
 
 
 class XIntersectionIndex:
