@@ -177,13 +177,11 @@ class PrefaceSkein:
 		self.distanceFeedRate.addLine('(</extruderInitialization>)') # Initialization is finished, extrusion is starting.
 		self.distanceFeedRate.addLine('(<crafting>)') # Initialization is finished, crafting is starting.
 
-	def addPreface( self, rotatedLoopLayer ):
+	def addPreface( self, loopLayer ):
 		"Add preface to the carve layer."
-		self.distanceFeedRate.addLine('(<layer> %s )' % rotatedLoopLayer.z ) # Indicate that a new layer is starting.
-		if rotatedLoopLayer.rotation != None:
-			self.distanceFeedRate.addTagBracketedLine('bridgeRotation', str( rotatedLoopLayer.rotation ) ) # Indicate the bridge rotation.
-		for loop in rotatedLoopLayer.loops:
-			self.distanceFeedRate.addGcodeFromLoop(loop, rotatedLoopLayer.z)
+		self.distanceFeedRate.addLine('(<layer> %s )' % loopLayer.z ) # Indicate that a new layer is starting.
+		for loop in loopLayer.loops:
+			self.distanceFeedRate.addGcodeFromLoop(loop, loopLayer.z)
 		self.distanceFeedRate.addLine('(</layer>)')
 
 	def addShutdownToOutput(self):
@@ -212,9 +210,9 @@ class PrefaceSkein:
 			return ''
 		self.distanceFeedRate.decimalPlacesCarried = int(self.svgReader.sliceDictionary['decimalPlacesCarried'])
 		self.addInitializationToOutput()
-		for rotatedLoopLayerIndex, rotatedLoopLayer in enumerate(self.svgReader.rotatedLoopLayers):
-			settings.printProgressByNumber(rotatedLoopLayerIndex, len(self.svgReader.rotatedLoopLayers), 'preface')
-			self.addPreface( rotatedLoopLayer )
+		for loopLayerIndex, loopLayer in enumerate(self.svgReader.loopLayers):
+			settings.printProgressByNumber(loopLayerIndex, len(self.svgReader.loopLayers), 'preface')
+			self.addPreface( loopLayer )
 		self.addShutdownToOutput()
 		return self.distanceFeedRate.output.getvalue()
 

@@ -230,11 +230,9 @@ import os
 import sys
 
 
-# document after stretch, then comb, fill, home, inset, oozebane, raft, splodge, temperature once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension  http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge
-# make link to only troubleshooting forum
-# move bridge to inset, consolidate _carve
-# _carve print zone print slices
-# move inset to manipulation shapes
+# document after stretch, then carve, comb, fill, home, inset, oozebane, raft, splodge, temperature once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension  http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge
+# merge loops getClosestDistanceIndexOfPoint FaceGenerator offsetBottom offsetTop while getNext() != None, inset, intersect & inset, from bottom, get real layerThickness & importRadius
+# document announce infillInD.. move
 # document announce smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
 # document announce Maximum E Value before Reset
 # document announce Surrounding Angle up to 80
@@ -273,7 +271,7 @@ import sys
 # comb documentation
 #
 # When opening a file for craft I wondered if there is an option to set the file type to .stl as it currently defaults to .xml
-# check inset loop for intersection with rotatedLoopLayer.loops
+# check inset loop for intersection with loopLayer.loops
 # add fill in penultimate loops
 # maybe make vectorwrite prominent, not skeiniso, probably not because it doesn't work on Mac
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object

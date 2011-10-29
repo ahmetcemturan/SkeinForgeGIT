@@ -19,7 +19,6 @@ from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import intercircle
 from fabmetheus_utilities import settings
-import cmath
 import math
 
 
@@ -249,44 +248,6 @@ def getAdditionalLoopLength(loop, point, pointIndex):
 	beforePoint = loop[(pointIndex + len(loop) - 1) % len(loop)]
 	return abs(point - beforePoint) + abs(point - afterPoint) - abs(afterPoint - beforePoint)
 
-def getBridgeDirection( belowLoops, layerLoops, layerThickness ):
-	'Get span direction for the majority of the overhanging extrusion perimeter, if any.'
-	if len( belowLoops ) < 1:
-		return None
-	belowOutsetLoops = []
-	overhangInset = 1.875 * layerThickness
-	slightlyGreaterThanOverhang = 1.1 * overhangInset
-	for loop in belowLoops:
-		centers = intercircle.getCentersFromLoopDirection( True, loop, slightlyGreaterThanOverhang )
-		for center in centers:
-			outset = intercircle.getSimplifiedInsetFromClockwiseLoop( center, overhangInset )
-			if intercircle.isLargeSameDirection( outset, center, overhangInset ):
-				belowOutsetLoops.append( outset )
-	bridgeRotation = complex()
-	for loop in layerLoops:
-		for pointIndex in xrange(len(loop)):
-			previousIndex = ( pointIndex + len(loop) - 1 ) % len(loop)
-			bridgeRotation += getOverhangDirection( belowOutsetLoops, loop[ previousIndex ], loop[pointIndex] )
-	if abs( bridgeRotation ) < 0.75 * layerThickness:
-		return None
-	else:
-		bridgeRotation /= abs( bridgeRotation )
-		return cmath.sqrt( bridgeRotation )
-
-def getBridgeLoops( layerThickness, loop ):
-	'Get the inset bridge loops from the loop.'
-	halfWidth = 1.5 * layerThickness
-	slightlyGreaterThanHalfWidth = 1.1 * halfWidth
-	extrudateLoops = []
-	centers = intercircle.getCentersFromLoop( loop, slightlyGreaterThanHalfWidth )
-	for center in centers:
-		extrudateLoop = intercircle.getSimplifiedInsetFromClockwiseLoop( center, halfWidth )
-		if intercircle.isLargeSameDirection( extrudateLoop, center, halfWidth ):
-			if euclidean.isPathInsideLoop( loop, extrudateLoop ) == euclidean.isWiddershins(loop):
-				extrudateLoop.reverse()
-				extrudateLoops.append( extrudateLoop )
-	return extrudateLoops
-
 def getCarveIntersectionFromEdge(edge, vertexes, z):
 	'Get the complex where the carve intersects the edge.'
 	firstVertex = vertexes[ edge.vertexIndexes[0] ]
@@ -309,24 +270,11 @@ def getDescendingAreaLoops(allPoints, corners, importRadius):
 			descendingAreaLoops.append(loop)
 			addLoopToPointTable(loop, pointDictionary)
 	descendingAreaLoops = euclidean.getSimplifiedLoops(descendingAreaLoops, importRadius)
-#	return descendingAreaLoops
 	return getLoopsWithCorners(corners, importRadius, descendingAreaLoops, pointDictionary)
 
 def getDescendingAreaOrientedLoops(allPoints, corners, importRadius):
 	'Get descending area oriented loops which include most of the points.'
 	return getOrientedLoops(getDescendingAreaLoops(allPoints, corners, importRadius))
-
-def getDoubledRoundZ( overhangingSegment, segmentRoundZ ):
-	'Get doubled plane angle around z of the overhanging segment.'
-	endpoint = overhangingSegment[0]
-	roundZ = endpoint.point - endpoint.otherEndpoint.point
-	roundZ *= segmentRoundZ
-	if abs( roundZ ) == 0.0:
-		return complex()
-	if roundZ.real < 0.0:
-		roundZ *= - 1.0
-	roundZLength = abs( roundZ )
-	return roundZ * roundZ / roundZLength
 
 def getGeometryOutputByFacesVertexes(faces, vertexes):
 	'Get geometry output dictionary by faces and vertexes.'
@@ -486,6 +434,13 @@ def getLoopsFromUnprovenMesh(edges, faces, importRadius, vertexes, z):
 	pointTable = {}
 	return getDescendingAreaLoops(allPoints, corners, importRadius)
 
+def getLoopLayerAppend(loopLayers, z):
+	'Get next z and add extruder loops.'
+	settings.printProgress(len(loopLayers), 'slice')
+	loopLayer = euclidean.LoopLayer(z)
+	loopLayers.append(loopLayer)
+	return loopLayer
+
 def getLoopsWithCorners(corners, importRadius, loops, pointTable):
 	'Add corners to the loops.'
 	for corner in corners:
@@ -511,27 +466,6 @@ def getOrientedLoops(loops):
 		if isInFilledRegion == euclidean.isWiddershins(loop):
 			loop.reverse()
 	return loops
-
-def getOverhangDirection( belowOutsetLoops, segmentBegin, segmentEnd ):
-	'Add to span direction from the endpoint segments which overhang the layer below.'
-	segment = segmentEnd - segmentBegin
-	normalizedSegment = euclidean.getNormalized( complex( segment.real, segment.imag ) )
-	segmentYMirror = complex(normalizedSegment.real, -normalizedSegment.imag)
-	segmentBegin = segmentYMirror * segmentBegin
-	segmentEnd = segmentYMirror * segmentEnd
-	solidXIntersectionList = []
-	y = segmentBegin.imag
-	solidXIntersectionList.append( euclidean.XIntersectionIndex( - 1.0, segmentBegin.real ) )
-	solidXIntersectionList.append( euclidean.XIntersectionIndex( - 1.0, segmentEnd.real ) )
-	for belowLoopIndex in xrange( len( belowOutsetLoops ) ):
-		belowLoop = belowOutsetLoops[ belowLoopIndex ]
-		rotatedOutset = euclidean.getRotatedComplexes( segmentYMirror, belowLoop )
-		euclidean.addXIntersectionIndexesFromLoopY( rotatedOutset, belowLoopIndex, solidXIntersectionList, y )
-	overhangingSegments = euclidean.getSegmentsFromXIntersectionIndexes( solidXIntersectionList, y )
-	overhangDirection = complex()
-	for overhangingSegment in overhangingSegments:
-		overhangDirection += getDoubledRoundZ( overhangingSegment, normalizedSegment )
-	return overhangDirection
 
 def getOverlapRatio( loop, pointTable ):
 	'Get the overlap ratio between the loop and the point table.'
@@ -668,19 +602,6 @@ def getWideAnglePointIndex(loop):
 			widestPointIndex = pointIndex
 	return widestPointIndex
 
-def getZAddExtruderPathsBySolidCarving(rotatedLoopLayer, solidCarving, z):
-	'Get next z and add extruder loops by solid carving.'
-	solidCarving.rotatedLoopLayers.append(rotatedLoopLayer)
-	nextZ = z + solidCarving.layerThickness
-	if not solidCarving.infillInDirectionOfBridge:
-		return nextZ
-	allExtrudateLoops = []
-	for loop in rotatedLoopLayer.loops:
-		allExtrudateLoops += getBridgeLoops(solidCarving.layerThickness, loop)
-	rotatedLoopLayer.rotation = getBridgeDirection(solidCarving.belowLoops, allExtrudateLoops, solidCarving.layerThickness)
-	solidCarving.belowLoops = allExtrudateLoops
-	return nextZ
-
 def isInline( beginComplex, centerComplex, endComplex ):
 	'Determine if the three complex points form a line.'
 	centerBeginComplex = beginComplex - centerComplex
@@ -762,13 +683,12 @@ class TriangleMesh( group.Group ):
 		'Add empty lists.'
 		group.Group.__init__(self)
 		self.belowLoops = []
-		self.infillInDirectionOfBridge = False
 		self.edges = []
 		self.faces = []
 		self.importCoarseness = 1.0
 		self.isCorrectMesh = True
+		self.loopLayers = []
 		self.oldChainTetragrid = None
-		self.rotatedLoopLayers = []
 		self.transformedVertexes = None
 		self.vertexes = []
 
@@ -776,6 +696,19 @@ class TriangleMesh( group.Group ):
 		'Add the xml section for this object.'
 		xml_simple_writer.addXMLFromVertexes( depth, output, self.vertexes )
 		xml_simple_writer.addXMLFromObjects( depth, self.faces, output )
+
+	def getCarveBoundaryLayers(self):
+		'Get the boundary layers.'
+		if self.getMinimumZ() == None:
+			return []
+		halfHeight = 0.5 * self.layerThickness
+		self.zoneArrangement = ZoneArrangement(self.layerThickness, self.getTransformedVertexes())
+		layerTop = self.cornerMaximum.z - halfHeight * 0.5
+		z = self.cornerMinimum.z + halfHeight
+		while z < layerTop:
+			getLoopLayerAppend(self.loopLayers, z).loops = self.getLoopsFromMesh(self.zoneArrangement.getEmptyZ(z))
+			z += self.layerThickness
+		return self.loopLayers
 
 	def getCarveCornerMaximum(self):
 		'Get the corner maximum of the vertexes.'
@@ -788,18 +721,6 @@ class TriangleMesh( group.Group ):
 	def getCarveLayerThickness(self):
 		'Get the layer thickness.'
 		return self.layerThickness
-
-	def getCarveRotatedBoundaryLayers(self):
-		'Get the rotated boundary layers.'
-		if self.getMinimumZ() == None:
-			return []
-		halfHeight = 0.5 * self.layerThickness
-		self.zoneArrangement = ZoneArrangement(self.layerThickness, self.getTransformedVertexes())
-		layerTop = self.cornerMaximum.z - halfHeight * 0.5
-		z = self.cornerMinimum.z + halfHeight
-		while z < layerTop:
-			z = self.getZAddExtruderPaths(z)
-		return self.rotatedLoopLayers
 
 	def getFabmetheusXML(self):
 		'Return the fabmetheus XML.'
@@ -865,13 +786,6 @@ class TriangleMesh( group.Group ):
 		self.transformedVertexes = None
 		return self.vertexes
 
-	def getZAddExtruderPaths(self, z):
-		'Get next z and add extruder loops.'
-		settings.printProgress(len(self.rotatedLoopLayers), 'slice')
-		rotatedLoopLayer = euclidean.RotatedLoopLayer(z)
-		rotatedLoopLayer.loops = self.getLoopsFromMesh(self.zoneArrangement.getEmptyZ(z))
-		return getZAddExtruderPathsBySolidCarving(rotatedLoopLayer, self, z)
-
 	def liftByMinimumZ(self, minimumZ):
 		'Lift the triangle mesh to the altitude.'
 		altitude = evaluate.getEvaluatedFloat(None, self.elementNode, 'altitude')
@@ -884,10 +798,6 @@ class TriangleMesh( group.Group ):
 	def setCarveImportRadius( self, importRadius ):
 		'Set the import radius.'
 		self.importRadius = importRadius
-
-	def setCarveInfillInDirectionOfBridge( self, infillInDirectionOfBridge ):
-		'Set the infill in direction of bridge.'
-		self.infillInDirectionOfBridge = infillInDirectionOfBridge
 
 	def setCarveIsCorrectMesh( self, isCorrectMesh ):
 		'Set the is correct mesh flag.'

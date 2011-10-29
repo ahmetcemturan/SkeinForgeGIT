@@ -89,12 +89,12 @@ def getNewRepository():
 	'Get new repository.'
 	return ScaleRepository()
 
-def setLoopLayerScale(rotatedLoopLayer, xyPlaneScale, zAxisScale):
+def setLoopLayerScale(loopLayer, xyPlaneScale, zAxisScale):
 	"Set the slice element scale."
-	for loop in rotatedLoopLayer.loops:
+	for loop in loopLayer.loops:
 		for pointIndex in xrange(len(loop)):
 			loop[pointIndex] *= xyPlaneScale
-	rotatedLoopLayer.z *= zAxisScale
+	loopLayer.z *= zAxisScale
 
 def writeOutput(fileName, shouldAnalyze=True):
 	'Scale the carving.'
@@ -135,12 +135,12 @@ class ScaleSkein:
 		decimalPlacesCarried = int(svgReader.sliceDictionary['decimalPlacesCarried'])
 		layerThickness = zAxisScale * float(svgReader.sliceDictionary['layerThickness'])
 		perimeterWidth = float(svgReader.sliceDictionary['perimeterWidth'])
-		rotatedLoopLayers = svgReader.rotatedLoopLayers
-		for rotatedLoopLayer in rotatedLoopLayers:
-			setLoopLayerScale(rotatedLoopLayer, xyPlaneScale, zAxisScale)
+		loopLayers = svgReader.loopLayers
+		for loopLayer in loopLayers:
+			setLoopLayerScale(loopLayer, xyPlaneScale, zAxisScale)
 		cornerMaximum = Vector3(-912345678.0, -912345678.0, -912345678.0)
 		cornerMinimum = Vector3(912345678.0, 912345678.0, 912345678.0)
-		svg_writer.setSVGCarvingCorners(cornerMaximum, cornerMinimum, layerThickness, rotatedLoopLayers)
+		svg_writer.setSVGCarvingCorners(cornerMaximum, cornerMinimum, layerThickness, loopLayers)
 		svgWriter = svg_writer.SVGWriter(
 			True,
 			cornerMaximum,
@@ -150,7 +150,7 @@ class ScaleSkein:
 			perimeterWidth)
 		commentElement = svg_writer.getCommentElement(svgReader.documentElement)
 		procedureNameString = svgReader.sliceDictionary['procedureName'] + ',scale'
-		return svgWriter.getReplacedSVGTemplate(fileName, procedureNameString, rotatedLoopLayers, commentElement)
+		return svgWriter.getReplacedSVGTemplate(fileName, loopLayers, procedureNameString, commentElement)
 
 
 def main():

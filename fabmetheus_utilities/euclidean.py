@@ -2067,13 +2067,14 @@ def unbuckleBasis( basis, maximumUnbuckling, normal ):
 
 class DistanceIndex:
 	'A class to hold the distance and the index of the loop.'
-	def __init__( self, distance, index ):
+	def __init__(self, distance, index):
+		'Initialize.'
 		self.distance = distance
 		self.index = index
 
 	def __repr__(self):
 		'Get the string representation of this distance index.'
-		return '%s, %s' % ( self.distance, self.index )
+		return '%s, %s' % (self.distance, self.index)
 
 
 class Endpoint:
@@ -2469,38 +2470,6 @@ class ProjectiveSpace:
 		'Unbuckle space.'
 		unbuckleBasis( self.basisX, maximumUnbuckling, normal )
 		unbuckleBasis( self.basisY, maximumUnbuckling, normal )
-
-
-class RotatedLoopLayer:
-	'A rotated layer.'
-	def __init__( self, z ):
-		self.loops = []
-		self.rotation = None
-		self.z = z
-
-	def __repr__(self):
-		'Get the string representation of this rotated loop layer.'
-		return '%s, %s, %s' % ( self.z, self.rotation, self.loops )
-
-	def addXML(self, depth, output):
-		'Add the xml for this object.'
-		if len( self.loops ) < 1:
-			return
-		if len( self.loops ) == 1:
-			xml_simple_writer.addXMLFromLoopComplexZ( {}, depth, self.loops[0], output, self.z )
-			return
-		xml_simple_writer.addBeginXMLTag( {}, depth, 'group', output )
-		for loop in self.loops:
-			xml_simple_writer.addXMLFromLoopComplexZ( {}, depth + 1, loop, output, self.z )
-		xml_simple_writer.addEndXMLTag(depth, 'group', output )
-
-	def getCopyAtZ( self, z ):
-		'Get a raised copy.'
-		raisedRotatedLoopLayer = RotatedLoopLayer(z)
-		for loop in self.loops:
-			raisedRotatedLoopLayer.loops.append( loop[:] )
-		raisedRotatedLoopLayer.rotation = self.rotation
-		return raisedRotatedLoopLayer
 
 
 class XIntersectionIndex:

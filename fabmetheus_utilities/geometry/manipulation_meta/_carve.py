@@ -60,6 +60,7 @@ def processElementNodeByDerivation(derivation, elementNode):
 		print(targetElementNode)
 		print(derivation.elementNode)
 		return
+	matrix.getBranchMatrixSetElementNode(targetElementNode)
 	transformedVertexes = xmlObject.getTransformedVertexes()
 	if len(transformedVertexes) < 1:
 		print('Warning, transformedVertexes is zero in processElementNodeByDerivation in carve for:')
@@ -69,8 +70,6 @@ def processElementNodeByDerivation(derivation, elementNode):
 		return
 	elementNode.localName = 'group'
 	elementNode.getXMLProcessor().processElementNode(elementNode)
-	matrix.getBranchMatrixSetElementNode(targetElementNode)
-	targetChainMatrix = matrix.Matrix(xmlObject.getMatrixChainTetragrid())
 	minimumZ = boolean_geometry.getMinimumZ(xmlObject)
 	maximumZ = euclidean.getTopPath(transformedVertexes)
 	zoneArrangement = triangle_mesh.ZoneArrangement(derivation.layerThickness, transformedVertexes)
@@ -79,9 +78,10 @@ def processElementNodeByDerivation(derivation, elementNode):
 	loopLayers = boolean_geometry.getLoopLayers([xmlObject], derivation.importRadius, derivation.layerThickness, maximumZ, minimumZ, False, zoneArrangement)
 	targetElementNode.attributes['visible'] = oldVisibleString
 	for loopLayerIndex, loopLayer in enumerate(loopLayers):
-		pathElement = getLinkedElementNode('_carve_%s' % loopLayerIndex, elementNode, targetElementNode)
-		vector3Loops = euclidean.getVector3Paths(loopLayer.loops, loopLayer.z)
-		path.convertElementNode(pathElement, vector3Loops)
+		if len(loopLayer.loops) > 0:
+			pathElement = getLinkedElementNode('_carve_%s' % loopLayerIndex, elementNode, targetElementNode)
+			vector3Loops = euclidean.getVector3Paths(loopLayer.loops, loopLayer.z)
+			path.convertElementNode(pathElement, vector3Loops)
 
 
 class CarveDerivation:

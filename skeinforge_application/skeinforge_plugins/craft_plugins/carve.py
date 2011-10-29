@@ -168,7 +168,6 @@ class CarveRepository:
 		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
 		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 3.0, 2.0)
 		self.importCoarseness = settings.FloatSpin().getFromValue( 0.5, 'Import Coarseness (ratio):', self, 2.0, 1.0 )
-		self.infillInDirectionOfBridge = settings.BooleanSetting().getFromValue('Infill in Direction of Bridge', self, True )
 		self.layerThickness = settings.FloatSpin().getFromValue( 0.1, 'Layer Thickness (mm):', self, 1.0, 0.4 )
 		settings.LabelSeparator().getFromRepository(self)
 		settings.LabelDisplay().getFromName('- Layers -', self )
@@ -197,13 +196,12 @@ class CarveSkein:
 		"Parse gnu triangulated surface text and store the carved gcode."
 		layerThickness = repository.layerThickness.value
 		perimeterWidth = repository.perimeterWidthOverThickness.value * layerThickness
-		carving.setCarveInfillInDirectionOfBridge(repository.infillInDirectionOfBridge.value)
 		carving.setCarveLayerThickness(layerThickness)
 		importRadius = 0.5 * repository.importCoarseness.value * abs(perimeterWidth)
 		carving.setCarveImportRadius(max(importRadius, 0.01 * layerThickness))
 		carving.setCarveIsCorrectMesh(repository.correctMesh.value)
-		rotatedLoopLayers = carving.getCarveRotatedBoundaryLayers()
-		if len(rotatedLoopLayers) < 1:
+		loopLayers = carving.getCarveBoundaryLayers()
+		if len(loopLayers) < 1:
 			print('Warning, there are no slices for the model, this could be because the model is too small for the Layer Thickness.')
 			return ''
 		layerThickness = carving.getCarveLayerThickness()
@@ -216,9 +214,8 @@ class CarveSkein:
 			decimalPlacesCarried,
 			carving.getCarveLayerThickness(),
 			perimeterWidth)
-		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(repository, rotatedLoopLayers)
-		return svgWriter.getReplacedSVGTemplate(
-			fileName, 'carve', truncatedRotatedBoundaryLayers, carving.getFabmetheusXML())
+		truncatedRotatedBoundaryLayers = svg_writer.getTruncatedRotatedBoundaryLayers(loopLayers, repository)
+		return svgWriter.getReplacedSVGTemplate(fileName, truncatedRotatedBoundaryLayers, 'carve', carving.getFabmetheusXML())
 
 
 def main():
