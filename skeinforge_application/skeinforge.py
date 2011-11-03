@@ -231,7 +231,10 @@ import sys
 
 
 # document after stretch, then carve, comb, fill, home, inset, oozebane, raft, splodge, temperature once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension  http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge
-# merge loops getClosestDistanceIndexOfPoint FaceGenerator offsetBottom offsetTop while getNext() != None, inset, intersect & inset, from bottom, get real layerThickness & importRadius
+# test with difference, getRadiusByPrefix with defaultValue, insetPartialLoops, derivation
+# if there is no fill do not add fill
+# getElementsByLocalName which is the equivalent of # getElementsByTagName
+# packingDensity or density in grid - probably just density
 # document announce infillInD.. move
 # document announce smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
 # document announce Maximum E Value before Reset
@@ -239,8 +242,8 @@ import sys
 # interim release
 #
 # announce bookend / alteration Replace Variable with Setting, change alterations to (<alterationDeleteThisPrefix/>)
-# rename homing home
-# add volume fraction to fill, if there is no fill do not add fill
+# rename homing file home
+# add volume fraction to fill
 #
 # move dimension after unpause
 # announce analyzeGcode in export
@@ -251,18 +254,20 @@ import sys
 # unimportant
 # minor outline problem when an end path goes through a path, like in the letter A
 # view profile 1 mm thickness
-# analyze doesn't save skeinlayer settings
+# analyze doesn't save skeinlayer settings, remember xy in skeiniso
 #
 #
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
+# check globalExecutionOrder, ensure that bottom order is really high
 # set temperature in temperature
 # voronoi average location intersection looped inset intercircles
 # skin layers without something over the infill
-# check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean
+# check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean, add fill in penultimate loops
 # backup demozendium links
 # unpause slow flow rate instead of speeding feed rate
 # maybe in svgReader if loop intersection with previous union else add
 # add links download manual svg_writer, add left right arrow keys to layer
+# manipulation derivations
 # infuse _extrusion
 # cutting ahmet
 #
@@ -272,20 +277,16 @@ import sys
 #
 # When opening a file for craft I wondered if there is an option to set the file type to .stl as it currently defaults to .xml
 # check inset loop for intersection with loopLayer.loops
-# add fill in penultimate loops
 # maybe make vectorwrite prominent, not skeiniso, probably not because it doesn't work on Mac
 # close, getPillarByLoopLists, addConcave, polymorph original graph section, loop, add step object, add continuous object
 # chamber: heated bed off at a layer http://blog.makerbot.com/2011/03/17/if-you-cant-stand-the-heat/
-# packingDensity or density in grid - probably just density
 # derivations for shapes
 # profile copy / rename   /   delete, maybe move craft type to profile
 # think about rectangular getVector3RemoveByPre..
 # del previous, add begin & end if far  get actual path
 # linearbearingexample 15 x 1 x 2, linearbearingcage
-# remember xy in skeiniso
 # polling
 # connectionfrom, to, connect, xaxis
-# getElementsByLocalName which is the equivalent of # getElementsByTagName
 # move replace from export to alterations
 # lathe, transform normal in getRemaining, getConnection
 # add overview link to crnsdoo index and svg page
@@ -355,6 +356,7 @@ import sys
 # remove index from CircleIntersection remove ahead or behind from CircleIntersection _speed
 # probably not speed up CircleIntersection by performing isWithinCircles before creation _speed
 # don't remove brackets in early craft tools _speed
+# check bounding box when subtracting or intersecting boolean geometry
 #
 #
 # add hook _extrusion
@@ -432,7 +434,7 @@ import sys
 # maybe carve aoi xml testing and check xml gcode
 # maybe cross hatch support polishing???
 # maybe print svg view from current layer or zero layer in single view
-# maybe check if tower is picking the nearest island
+# maybe check if tower is picking the closest island
 # maybe combine skein classes in fillet
 # maybe isometric svg option
 

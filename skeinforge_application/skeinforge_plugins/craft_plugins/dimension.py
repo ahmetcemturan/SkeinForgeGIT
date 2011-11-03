@@ -250,7 +250,6 @@ class DimensionSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			if firstWord == 'G1':
 				if isActive:
-					location = gcodec.getLocationFromSplitLine(location, splitLine)
 					if not self.repository.retractWithinIsland.value:
 						locationEnclosureIndex = self.getSmallestEnclosureIndex(location.dropAxis())
 						if locationEnclosureIndex != self.getSmallestEnclosureIndex(self.oldLocation.dropAxis()):
@@ -259,6 +258,8 @@ class DimensionSkein:
 					xyTravel = abs(locationMinusOld.dropAxis())
 					zTravelMultiplied = locationMinusOld.z * self.zDistanceRatio
 					return math.sqrt(xyTravel * xyTravel + zTravelMultiplied * zTravelMultiplied)
+				else:
+					location = gcodec.getLocationFromSplitLine(location, splitLine)
 			elif firstWord == 'M101':
 				isActive = True
 			elif firstWord == 'M103':

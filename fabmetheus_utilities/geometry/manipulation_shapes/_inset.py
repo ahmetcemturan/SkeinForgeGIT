@@ -9,7 +9,9 @@ import __init__
 
 from fabmetheus_utilities.geometry.creation import lineation
 from fabmetheus_utilities.geometry.creation import solid
+from fabmetheus_utilities.geometry.geometry_utilities.evaluate_elements import setting
 from fabmetheus_utilities.geometry.geometry_utilities import boolean_geometry
+from fabmetheus_utilities.geometry.geometry_utilities import boolean_solid
 from fabmetheus_utilities.geometry.geometry_utilities import evaluate
 from fabmetheus_utilities.geometry.geometry_utilities import matrix
 from fabmetheus_utilities.geometry.solids import triangle_mesh
@@ -27,6 +29,12 @@ __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agp
 globalExecutionOrder = 80
 
 
+def getLoopOrEmpty(loopIndex, loops):
+	'Get the loop, or if the loopIndex is out of range, get an empty list.'
+	if loopIndex < 0 or loopIndex >= len(loops):
+		return []
+	return loops[loopIndex]
+
 def getManipulatedPaths(close, elementNode, loop, prefix, sideLength):
 	"Get inset path."
 	radius = lineation.getStrokeRadiusByPrefix(elementNode, prefix)
@@ -35,32 +43,54 @@ def getManipulatedPaths(close, elementNode, loop, prefix, sideLength):
 def getManipulatedGeometryOutput(elementNode, geometryOutput, prefix):
 	'Get inset geometryOutput.'
 	copyShallow = elementNode.getCopyShallow()
+	radius = evaluate.getEvaluatedFloat(2.0 * setting.getPerimeterWidth(elementNode), elementNode, prefix + 'radius')
 	solid.processElementNodeByGeometry(copyShallow, geometryOutput)
 	targetMatrix = matrix.getBranchMatrixSetElementNode(elementNode)
 	matrix.setElementNodeDictionaryMatrix(copyShallow, targetMatrix)
 	transformedVertexes = copyShallow.xmlObject.getTransformedVertexes()
 	minimumZ = boolean_geometry.getMinimumZ(copyShallow.xmlObject)
 	maximumZ = euclidean.getTopPath(transformedVertexes)
-	layerThickness = 0.4
-	importRadius = 0.36
+	layerThickness = setting.getLayerThickness(elementNode)
+	importRadius = setting.getImportRadius(elementNode)
 	zoneArrangement = triangle_mesh.ZoneArrangement(layerThickness, transformedVertexes)
 	copyShallow.attributes['visible'] = True
-	loopLayers = boolean_geometry.getLoopLayers([copyShallow.xmlObject], importRadius, layerThickness, maximumZ, minimumZ, False, zoneArrangement)
+	copyShallowObjects = [copyShallow.xmlObject]
+	bottomLoopLayer = euclidean.LoopLayer(minimumZ)
+	z = minimumZ + 0.1 * layerThickness
+	bottomLoopLayer.loops = boolean_geometry.getEmptyZLoops(copyShallowObjects, importRadius, False, z, zoneArrangement)
+	loopLayers = [bottomLoopLayer]
+	z = minimumZ + layerThickness
+	loopLayers += boolean_geometry.getLoopLayers(copyShallowObjects, importRadius, layerThickness, maximumZ, False, z, zoneArrangement)
 	copyShallow.parentNode.xmlObject.archivableObjects.remove(copyShallow.xmlObject)
+	belowLoop = []
+	insetLoops = []
 	loops = []
 	vertexes = []
 	for loopLayer in loopLayers:
+		insetLoops.append(intercircle.getLargestInsetLoopFromLoop(loopLayer.loops[0], radius))
+	for insetLoopIndex, insetLoop in enumerate(insetLoops):
+		vector3Loop = []
+		loopLists = [[getLoopOrEmpty(insetLoopIndex - 1, insetLoops)], [insetLoop]]
+		largestLoop = euclidean.getLargestLoop(boolean_solid.getLoopsIntersection(importRadius, loopLists))
+		if evaluate.getEvaluatedBoolean(True, elementNode, prefix + 'insetTop'):
+			loopLists = [[getLoopOrEmpty(insetLoopIndex + 1, insetLoops)], [largestLoop]]
+			largestLoop = euclidean.getLargestLoop(boolean_solid.getLoopsIntersection(importRadius, loopLists))
+		for point in largestLoop:
+			vector3Index = Vector3Index(len(vertexes), point.real, point.imag, loopLayers[insetLoopIndex].z)
+			vector3Loop.append(vector3Index)
+			vertexes.append(vector3Index)
+		if len(vector3Loop) > 0:
+			loops.append(vector3Loop)
+	if evaluate.getEvaluatedBoolean(False, elementNode, prefix + 'addExtraTopLayer') and len(loops) > 0:
+		topLoop = loops[-1]
 		vector3Loop = []
 		loops.append(vector3Loop)
-		for loop in loopLayer.loops[: 1]: # just one for now
-			for point in loop:
-				vector3Index = Vector3Index(len(vertexes), point.real, point.imag, 2.0 * loopLayer.z)
-				print(  len(vertexes))
-				vector3Loop.append(vector3Index)
-				vertexes.append(vector3Index)
-	geometryOutput = triangle_mesh.getPillarOutput(loops)
-	print(  minimumZ)
-	print(  geometryOutput)
+		z = topLoop[0].z + layerThickness
+		for point in topLoop:
+			vector3Index = Vector3Index(len(vertexes), point.x, point.y, z)
+			vector3Loop.append(vector3Index)
+			vertexes.append(vector3Index)
+	geometryOutput = triangle_mesh.getMeldedPillarOutput(loops)
 	return geometryOutput
 
 def processElementNode(elementNode):

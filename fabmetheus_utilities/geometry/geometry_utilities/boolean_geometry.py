@@ -47,10 +47,9 @@ def getEmptyZLoops(archivableObjects, importRadius, shouldPrintWarning, z, zoneA
 			print(z)
 	return loops
 
-def getLoopLayers(archivableObjects, importRadius, layerThickness, maximumZ, minimumZ, shouldPrintWarning, zoneArrangement):
+def getLoopLayers(archivableObjects, importRadius, layerThickness, maximumZ, shouldPrintWarning, z, zoneArrangement):
 	'Get loop layers.'
 	loopLayers = []
-	z = minimumZ + 0.5 * layerThickness
 	while z < maximumZ:
 		triangle_mesh.getLoopLayerAppend(loopLayers, z).loops = getEmptyZLoops(archivableObjects, importRadius, True, z, zoneArrangement)
 		z += layerThickness
@@ -100,7 +99,8 @@ class BooleanGeometry:
 		'Get the boundary layers.'
 		if self.getMinimumZ() == None:
 			return []
-		self.loopLayers = getLoopLayers(self.archivableObjects, self.importRadius, self.layerThickness, self.maximumZ, self.minimumZ, True, self.zoneArrangement)
+		z = self.minimumZ + 0.5 * self.layerThickness
+		self.loopLayers = getLoopLayers(self.archivableObjects, self.importRadius, self.layerThickness, self.maximumZ, True, z, self.zoneArrangement)
 		self.cornerMaximum = Vector3(-912345678.0, -912345678.0, -912345678.0)
 		self.cornerMinimum = Vector3(912345678.0, 912345678.0, 912345678.0)
 		for loopLayer in self.loopLayers:

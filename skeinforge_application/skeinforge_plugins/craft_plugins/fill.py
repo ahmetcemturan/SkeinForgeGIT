@@ -133,7 +133,7 @@ When selected the layer will start from the lower left corner.  This is to extru
 http://hydraraptor.blogspot.com/2010/12/round-robin.html
 
 ====Nearest====
-When selected the layer will start from the nearest point to the end of the last layer.  This leads to less stringing, but the first extrusion will be deposited on the hottest part of the last layer which leads to melting problems.  So this option is deprecated, eventually this option will be removed and the layers will always start from the lower left.
+When selected the layer will start from the closest point to the end of the last layer.  This leads to less stringing, but the first extrusion will be deposited on the hottest part of the last layer which leads to melting problems.  So this option is deprecated, eventually this option will be removed and the layers will always start from the lower left.
 
 ===Thread Sequence Choice===
 The 'Thread Sequence Choice' is the sequence in which the threads will be extruded on the second and higher layers.  There are three kinds of thread, the perimeter threads on the outside of the object, the loop threads aka inner shell threads, and the interior infill threads.  The first layer thread sequence is 'Perimeter > Loops > Infill'.

@@ -212,7 +212,7 @@ class CoolSkein:
 			largestLoop = euclidean.getSquareLoopWiddershins(minimumCorner, maximumCorner)
 		pointComplex = euclidean.getXYComplexFromVector3(self.oldLocation)
 		if pointComplex != None:
-			largestLoop = euclidean.getLoopStartingNearest(self.perimeterWidth, pointComplex, largestLoop)
+			largestLoop = euclidean.getLoopStartingClosest(self.perimeterWidth, pointComplex, largestLoop)
 		intercircle.addOrbitsIfLarge(
 			self.distanceFeedRate, largestLoop, self.orbitalFeedRatePerSecond, remainingOrbitTime, self.highestZ)
 

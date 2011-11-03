@@ -75,7 +75,8 @@ def processElementNodeByDerivation(derivation, elementNode):
 	zoneArrangement = triangle_mesh.ZoneArrangement(derivation.layerThickness, transformedVertexes)
 	oldVisibleString = targetElementNode.attributes['visible']
 	targetElementNode.attributes['visible'] = True
-	loopLayers = boolean_geometry.getLoopLayers([xmlObject], derivation.importRadius, derivation.layerThickness, maximumZ, minimumZ, False, zoneArrangement)
+	z = minimumZ + 0.5 * derivation.layerThickness
+	loopLayers = boolean_geometry.getLoopLayers([xmlObject], derivation.importRadius, derivation.layerThickness, maximumZ, False, z, zoneArrangement)
 	targetElementNode.attributes['visible'] = oldVisibleString
 	for loopLayerIndex, loopLayer in enumerate(loopLayers):
 		if len(loopLayer.loops) > 0:
@@ -91,7 +92,6 @@ class CarveDerivation:
 		self.elementNode = elementNode
 		self.importRadius = setting.getImportRadius(elementNode)
 		self.layerThickness = setting.getLayerThickness(elementNode)
-#		self.sheetThickness = setting.getSheetThickness(elementNode)
 		self.targetElementNode = evaluate.getElementNodeByKey(elementNode, 'target')
 
 	def __repr__(self):

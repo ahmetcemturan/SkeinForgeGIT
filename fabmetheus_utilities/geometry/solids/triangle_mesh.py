@@ -63,17 +63,18 @@ def addFacesByConvex(faces, indexedLoop):
 
 def addFacesByConvexBottomTopLoop(faces, indexedLoopBottom, indexedLoopTop):
 	'Add faces from loops.'
-	for indexedLoopIndex in xrange(max(len(indexedLoopBottom), len(indexedLoopTop))):
-		indexedLoopIndexEnd = (indexedLoopIndex + 1) % len(indexedLoopBottom)
+	if len(indexedLoopBottom) == 0 or len(indexedLoopTop) == 0:
+		return
+	for indexedPointIndex in xrange(max(len(indexedLoopBottom), len(indexedLoopTop))):
 		indexedConvex = []
 		if len(indexedLoopBottom) > 1:
-			indexedConvex.append(indexedLoopBottom[indexedLoopIndex])
-			indexedConvex.append(indexedLoopBottom[(indexedLoopIndex + 1) % len(indexedLoopBottom)])
+			indexedConvex.append(indexedLoopBottom[indexedPointIndex])
+			indexedConvex.append(indexedLoopBottom[(indexedPointIndex + 1) % len(indexedLoopBottom)])
 		else:
 			indexedConvex.append(indexedLoopBottom[0])
 		if len(indexedLoopTop) > 1:
-			indexedConvex.append(indexedLoopTop[(indexedLoopIndex + 1) % len(indexedLoopTop)])
-			indexedConvex.append(indexedLoopTop[indexedLoopIndex])
+			indexedConvex.append(indexedLoopTop[(indexedPointIndex + 1) % len(indexedLoopTop)])
+			indexedConvex.append(indexedLoopTop[indexedPointIndex])
 		else:
 			indexedConvex.append(indexedLoopTop[0])
 		addFacesByConvex(faces, indexedConvex)
@@ -127,10 +128,33 @@ def addFacesByLoopReversed(faces, indexedLoop):
 	'Add faces from a reversed convex polygon.'
 	addFacesByLoop(faces, indexedLoop[: : -1])
 
+def addFacesByMeldedConvexLoops(faces, indexedLoops):
+	'Add faces from melded loops.'
+	if len(indexedLoops) < 2:
+		return
+	for indexedLoopsIndex in xrange(len(indexedLoops) - 2):
+		FaceGenerator(faces, indexedLoops[indexedLoopsIndex], indexedLoops[indexedLoopsIndex + 1])
+	indexedLoopBottom = indexedLoops[-2]
+	indexedLoopTop = indexedLoops[-1]
+	if len(indexedLoopTop) < 1:
+		indexedLoopTop = indexedLoops[0]
+	FaceGenerator(faces, indexedLoopBottom, indexedLoopTop)
+
 def addLoopToPointTable(loop, pointTable):
 	'Add the points in the loop to the point table.'
 	for point in loop:
 		pointTable[point] = None
+
+def addMeldedPillarByLoops(faces, indexedLoops):
+	'Add melded pillar by loops which may be concave.'
+	if len(indexedLoops) < 1:
+		return
+	if len(indexedLoops[-1]) < 1:
+		addFacesByMeldedConvexLoops(faces, indexedLoops)
+		return
+	addFacesByLoopReversed(faces, indexedLoops[0])
+	addFacesByMeldedConvexLoops(faces, indexedLoops)
+	addFacesByLoop(faces, indexedLoops[-1])
 
 def addPillarByLoops(faces, indexedLoops):
 	'Add pillar by loops which may be concave.'
@@ -257,6 +281,18 @@ def getCarveIntersectionFromEdge(edge, vertexes, z):
 	zMinusFirst = z - firstVertex.z
 	up = secondVertex.z - firstVertex.z
 	return zMinusFirst * ( secondVertexComplex - firstVertexComplex ) / up + firstVertexComplex
+
+def getClosestDistanceIndexToPoint(point, loop):
+	'Get the distance squared to the closest point of the loop and index of that point.'
+	smallestDistance = 987654321987654321.0
+	closestDistanceIndex = None
+	pointComplex = point.dropAxis()
+	for otherPointIndex, otherPoint in enumerate(loop):
+		distance = abs(pointComplex - otherPoint.dropAxis())
+		if distance < smallestDistance:
+			smallestDistance = distance
+			closestDistanceIndex = euclidean.DistanceIndex(distance, otherPointIndex)
+	return closestDistanceIndex
 
 def getDescendingAreaLoops(allPoints, corners, importRadius):
 	'Get descending area loops which include most of the points.'
@@ -448,6 +484,13 @@ def getLoopsWithCorners(corners, importRadius, loops, pointTable):
 			addWithLeastLength(importRadius, loops, corner)
 			pointTable[corner] = None
 	return euclidean.getSimplifiedLoops(loops, importRadius)
+
+def getMeldedPillarOutput(loops):
+	'Get melded pillar output.'
+	faces = []
+	vertexes = getUniqueVertexes(loops)
+	addMeldedPillarByLoops(faces, loops)
+	return getGeometryOutputByFacesVertexes(faces, vertexes)
 
 def getNextEdgeIndexAroundZ( edge, faces, remainingEdgeTable ):
 	'Get the next edge index in the mesh carve.'
@@ -675,6 +718,56 @@ class EdgePair:
 		for edgeIndex in self.edgeIndexes:
 			self.edges.append( edges[ edgeIndex ] )
 		return self
+
+
+class FaceGenerator:
+	'A face generator.'
+	def __init__(self, faces, indexedLoopBottom, indexedLoopTop):
+		'Initialize.'
+		self.startTop = 0
+		if len(indexedLoopBottom) == 0 or len(indexedLoopTop) == 0:
+			return
+		smallestDistance = 987654321987654321.0
+		for pointIndex, point in enumerate(indexedLoopBottom):
+			distanceIndex = getClosestDistanceIndexToPoint(point, indexedLoopTop)
+			if distanceIndex.distance < smallestDistance:
+				smallestDistance = distanceIndex.distance
+				offsetBottom = pointIndex
+				offsetTop = distanceIndex.index
+		self.indexedLoopBottom = indexedLoopBottom[offsetBottom :] + indexedLoopBottom[: offsetBottom]
+		self.indexedLoopTop = indexedLoopTop[offsetTop :] + indexedLoopTop[: offsetTop]
+		for bottomIndex in xrange(len(self.indexedLoopBottom)):
+			self.addFacesByBottomIndex(bottomIndex, faces)
+		subsetTop = self.indexedLoopTop[self.startTop :]
+		subsetTop.append(self.indexedLoopTop[0])
+		addFacesByConvexBottomTopLoop(faces, [self.indexedLoopBottom[0]], subsetTop[: : -1])
+
+	def addFacesByBottomIndex(self, bottomIndex, faces):
+		'Add faces from the  bottom index to the next index.'
+		bottomPoint = self.indexedLoopBottom[bottomIndex % len(self.indexedLoopBottom)]
+		bottomPointNext = self.indexedLoopBottom[(bottomIndex + 1) % len(self.indexedLoopBottom)]
+		topIndex = self.startTop + getClosestDistanceIndexToPoint(bottomPointNext, self.indexedLoopTop[self.startTop :]).index
+		topIndexPlusOne = topIndex + 1
+		betweenIndex = self.getBetweenIndex(bottomPoint, bottomPointNext, topIndexPlusOne)
+		betweenIndexPlusOne = betweenIndex + 1
+		subsetStart = self.indexedLoopTop[self.startTop : betweenIndexPlusOne]
+		subsetEnd = self.indexedLoopTop[betweenIndex : topIndexPlusOne]
+		addFacesByConvexBottomTopLoop(faces, [bottomPoint], subsetStart[: : -1])
+		addFacesByConvexBottomTopLoop(faces, [bottomPoint, bottomPointNext], [self.indexedLoopTop[betweenIndex]])
+		addFacesByConvexBottomTopLoop(faces, [bottomPointNext], subsetEnd[: : -1])
+		self.startTop = topIndex
+
+	def getBetweenIndex(self, bottomPoint, bottomPointNext, topIndexPlusOne):
+		'Get the index of the last point along the loop which is closer to the bottomPoint.'
+		betweenIndex = self.startTop
+		bottomPointComplex = bottomPoint.dropAxis()
+		bottomPointNextComplex = bottomPointNext.dropAxis()
+		for topPointIndex in xrange(self.startTop, topIndexPlusOne):
+			topPointComplex = self.indexedLoopTop[topPointIndex].dropAxis()
+			if abs(topPointComplex - bottomPointComplex) > abs(topPointComplex - bottomPointNextComplex):
+				return betweenIndex
+			betweenIndex = topPointIndex
+		return betweenIndex
 
 
 class TriangleMesh( group.Group ):
