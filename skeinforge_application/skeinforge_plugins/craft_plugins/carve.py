@@ -28,11 +28,6 @@ Default is one.
 
 When a triangle mesh has holes in it, the triangle mesh slicer switches over to a slow algorithm that spans gaps in the mesh.  The higher the 'Import Coarseness' setting, the wider the gaps in the mesh it will span.  An import coarseness of one means it will span gaps of the perimeter width.
 
-===Infill in Direction of Bridge===
-Default is on.
-
-When selected, the infill will be in the direction of any bridge across a gap, so that the fill will be able to span a bridge easier.
-
 ===Layer Thickness===
 Default is 0.4 mm.
 

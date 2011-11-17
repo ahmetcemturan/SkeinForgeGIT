@@ -18,6 +18,7 @@ from fabmetheus_utilities.geometry.solids import triangle_mesh
 from fabmetheus_utilities.vector3index import Vector3Index
 from fabmetheus_utilities import euclidean
 from fabmetheus_utilities import intercircle
+import math
 
 
 __author__ = 'Enrique Perez (perez_enrique@yahoo.com)'
@@ -42,8 +43,10 @@ def getManipulatedPaths(close, elementNode, loop, prefix, sideLength):
 
 def getManipulatedGeometryOutput(elementNode, geometryOutput, prefix):
 	'Get inset geometryOutput.'
-	copyShallow = elementNode.getCopyShallow()
 	radius = evaluate.getEvaluatedFloat(2.0 * setting.getPerimeterWidth(elementNode), elementNode, prefix + 'radius')
+	if radius == 0.0:
+		return geometryOutput
+	copyShallow = elementNode.getCopyShallow()
 	solid.processElementNodeByGeometry(copyShallow, geometryOutput)
 	targetMatrix = matrix.getBranchMatrixSetElementNode(elementNode)
 	matrix.setElementNodeDictionaryMatrix(copyShallow, targetMatrix)
@@ -63,20 +66,22 @@ def getManipulatedGeometryOutput(elementNode, geometryOutput, prefix):
 	loopLayers += boolean_geometry.getLoopLayers(copyShallowObjects, importRadius, layerThickness, maximumZ, False, z, zoneArrangement)
 	copyShallow.parentNode.xmlObject.archivableObjects.remove(copyShallow.xmlObject)
 	belowLoop = []
-	insetLoops = []
+	diagonalRadius = math.sqrt(0.5) * radius
+	insetDiagonalLoops = []
 	loops = []
 	vertexes = []
 	for loopLayer in loopLayers:
-		insetLoops.append(intercircle.getLargestInsetLoopFromLoop(loopLayer.loops[0], radius))
-	for insetLoopIndex, insetLoop in enumerate(insetLoops):
+		insetDiagonalLoops.append(intercircle.getLargestInsetLoopFromLoop(loopLayer.loops[0], diagonalRadius))
+	for loopLayerIndex, loopLayer in enumerate(loopLayers):
 		vector3Loop = []
-		loopLists = [[getLoopOrEmpty(insetLoopIndex - 1, insetLoops)], [insetLoop]]
+		insetLoop = intercircle.getLargestInsetLoopFromLoop(loopLayer.loops[0], radius)
+		loopLists = [[getLoopOrEmpty(loopLayerIndex - 1, insetDiagonalLoops)], [insetLoop]]
 		largestLoop = euclidean.getLargestLoop(boolean_solid.getLoopsIntersection(importRadius, loopLists))
 		if evaluate.getEvaluatedBoolean(True, elementNode, prefix + 'insetTop'):
-			loopLists = [[getLoopOrEmpty(insetLoopIndex + 1, insetLoops)], [largestLoop]]
+			loopLists = [[getLoopOrEmpty(loopLayerIndex + 1, insetDiagonalLoops)], [largestLoop]]
 			largestLoop = euclidean.getLargestLoop(boolean_solid.getLoopsIntersection(importRadius, loopLists))
 		for point in largestLoop:
-			vector3Index = Vector3Index(len(vertexes), point.real, point.imag, loopLayers[insetLoopIndex].z)
+			vector3Index = Vector3Index(len(vertexes), point.real, point.imag, loopLayer.z)
 			vector3Loop.append(vector3Index)
 			vertexes.append(vector3Index)
 		if len(vector3Loop) > 0:

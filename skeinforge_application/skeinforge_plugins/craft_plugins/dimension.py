@@ -52,6 +52,16 @@ The default value is so low for ABS because ABS is relatively soft and with a pi
 
 Overall, you'll have to find the optimal filament packing density by experiment.
 
+===Maximum E Value before Reset===
+Default: 91234.0
+
+Defines the maximum E value before it is reset with the 'G92 E0' command line.  The reason it is reset only after the maximum E value is reached is because at least one firmware takes time to reset.  The problem with waiting until the E value is high before resetting is that more characters are sent.  So if your firmware takes a lot of time to reset, set this parameter to a high value, if it doesn't set this parameter to a low value or even zero.
+
+===Minimum Travel for Retraction===
+Default: 1.0 millimeter
+
+Defines the minimum distance that the extruder head has to travel from the end of one thread to the beginning of another, in order to trigger the extruder retraction.  Setting this to a high value means the extruder will retract only occasionally, setting it to a low value means the extruder will retract most of the time.
+
 ===Retract Within Island===
 Default is off.
 
@@ -258,8 +268,7 @@ class DimensionSkein:
 					xyTravel = abs(locationMinusOld.dropAxis())
 					zTravelMultiplied = locationMinusOld.z * self.zDistanceRatio
 					return math.sqrt(xyTravel * xyTravel + zTravelMultiplied * zTravelMultiplied)
-				else:
-					location = gcodec.getLocationFromSplitLine(location, splitLine)
+				location = gcodec.getLocationFromSplitLine(location, splitLine)
 			elif firstWord == 'M101':
 				isActive = True
 			elif firstWord == 'M103':

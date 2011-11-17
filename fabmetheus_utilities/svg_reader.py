@@ -501,7 +501,7 @@ class FontReader:
 		self.fontElementNode = documentElement.getFirstChildByLocalName('defs').getFirstChildByLocalName('font')
 		self.fontFaceElementNode = self.fontElementNode.getFirstChildByLocalName('font-face')
 		self.unitsPerEM = float(self.fontFaceElementNode.attributes['units-per-em'])
-		glyphElementNodes = self.fontElementNode.getChildNodesByLocalName('glyph')
+		glyphElementNodes = self.fontElementNode.getChildElementsByLocalName('glyph')
 		for glyphElementNode in glyphElementNodes:
 			self.glyphElementNodeDictionary[glyphElementNode.attributes['unicode']] = glyphElementNode
 

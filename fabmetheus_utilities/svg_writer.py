@@ -47,7 +47,7 @@ def getCommentElement(elementNode):
 
 def getSliceDictionary(elementNode):
 	'Get the metadata slice attribute dictionary.'
-	for metadataElement in elementNode.getChildNodesByLocalName('metadata'):
+	for metadataElement in elementNode.getChildElementsByLocalName('metadata'):
 		for childNode in metadataElement.childNodes:
 			if childNode.getNodeName().lower() == 'slice:layers':
 				return childNode.attributes
@@ -55,7 +55,7 @@ def getSliceDictionary(elementNode):
 
 def getSliceElementNodes(elementNode):
 	'Get the slice elements.'
-	gElementNodes = elementNode.getChildNodesByLocalNameRecursively('g')
+	gElementNodes = elementNode.getElementsByLocalName('g')
 	sliceElementNodes = []
 	for gElementNode in gElementNodes:
 		if 'id' in gElementNode.attributes:

@@ -112,7 +112,7 @@ def getRandomGrid(derivation, diameter, elementNode, loopsComplex, maximumComple
 	gridPath = []
 	diameterReciprocal = complex(1.0 / diameter.real, 1.0 / diameter.imag)
 	diameterSquared = diameter.real * diameter.real + diameter.imag * diameter.imag
-	elements = int(math.ceil(derivation.packingDensity * euclidean.getAreaLoops(loopsComplex) / diameterSquared / math.sqrt(0.75)))
+	elements = int(math.ceil(derivation.density * euclidean.getAreaLoops(loopsComplex) / diameterSquared / math.sqrt(0.75)))
 	elements = evaluate.getEvaluatedInt(elements, elementNode, 'elements')
 	failedPlacementAttempts = 0
 	pixelDictionary = {}
@@ -156,7 +156,7 @@ class GridDerivation:
 		self.inradius = lineation.getInradius(complex(10.0, 10.0), elementNode)
 		self.demiwidth = lineation.getFloatByPrefixBeginEnd(elementNode, 'demiwidth', 'width', self.inradius.real)
 		self.demiheight = lineation.getFloatByPrefixBeginEnd(elementNode, 'demiheight', 'height', self.inradius.imag)
-		self.packingDensity = evaluate.getEvaluatedFloatByKeys(0.2, elementNode, ['packingDensity', 'density'])
+		self.density = evaluate.getEvaluatedFloat(0.2, elementNode, 'density')
 		self.radius = lineation.getComplexByPrefixBeginEnd(elementNode, 'elementRadius', 'elementDiameter', complex(1.0, 1.0))
 		self.radius = lineation.getComplexByPrefixBeginEnd(elementNode, 'radius', 'diameter', self.radius)
 		self.seed = evaluate.getEvaluatedInt(None, elementNode, 'seed')

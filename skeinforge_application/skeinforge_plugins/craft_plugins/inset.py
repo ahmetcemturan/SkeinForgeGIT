@@ -12,10 +12,10 @@ Default is on.
 
 When selected, the M105 custom code for temperature reading will be added at the beginning of the file.
 
-===Bridge Width Multiplier===
-Default is one.
+===Infill in Direction of Bridge===
+Default is on.
 
-Defines the ratio of the extrusion width of a bridge layer over the extrusion width of the typical non bridge layers.
+When selected, the infill will be in the direction of any bridge across a gap, so that the fill will be able to span a bridge easier.
 
 ===Loop Order Choice===
 Default loop order choice is 'Ascending Area'.
@@ -293,7 +293,6 @@ class InsetRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Inset', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Inset')
 		self.addCustomCodeForTemperatureReading = settings.BooleanSetting().getFromValue('Add Custom Code for Temperature Reading', self, True )
-		self.bridgeWidthMultiplier = settings.FloatSpin().getFromValue( 0.8, 'Bridge Width Multiplier (ratio):', self, 1.2, 1.0 )
 		self.infillInDirectionOfBridge = settings.BooleanSetting().getFromValue('Infill in Direction of Bridge', self, True)
 		self.loopOrderChoice = settings.MenuButtonDisplay().getFromName('Loop Order Choice:', self )
 		self.loopOrderAscendingArea = settings.MenuRadio().getFromMenuButtonDisplay( self.loopOrderChoice, 'Ascending Area', self, True )
@@ -389,18 +388,15 @@ class InsetSkein:
 	def addInset(self, loopLayer):
 		"Add inset to the layer."
 		alreadyFilledArounds = []
-		halfWidth = self.halfPerimeterWidth
-		extrudateLoops = intercircle.getInsetLoopsFromLoops(loopLayer.loops, halfWidth)
+		extrudateLoops = intercircle.getInsetLoopsFromLoops(loopLayer.loops, self.halfPerimeterWidth)
 		if self.repository.infillInDirectionOfBridge.value:
-			bridgeRotation = getBridgeDirection(self.belowLoops, extrudateLoops, halfWidth)
+			bridgeRotation = getBridgeDirection(self.belowLoops, extrudateLoops, self.halfPerimeterWidth)
 			if bridgeRotation != None:
-				halfWidth *= self.repository.bridgeWidthMultiplier.value
 				self.distanceFeedRate.addTagBracketedLine('bridgeRotation', bridgeRotation)
-				extrudateLoops = intercircle.getInsetLoopsFromLoops(loopLayer.loops, halfWidth)
 		self.belowLoops = loopLayer.loops
 		triangle_mesh.sortLoopsInOrderOfArea(not self.repository.loopOrderAscendingArea.value, extrudateLoops)
 		for extrudateLoop in extrudateLoops:
-			self.addGcodeFromRemainingLoop(extrudateLoop, loopLayer, alreadyFilledArounds, halfWidth)
+			self.addGcodeFromRemainingLoop(extrudateLoop, loopLayer, alreadyFilledArounds, self.halfPerimeterWidth)
 
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the bevel gcode."
@@ -420,8 +416,6 @@ class InsetSkein:
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(<decimalPlacesCarried>':
 				self.addInitializationToOutput()
-				self.distanceFeedRate.addTagBracketedLine(
-					'bridgeWidthMultiplier', self.distanceFeedRate.getRounded( self.repository.bridgeWidthMultiplier.value ) )
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedProcedure('inset')
 				return

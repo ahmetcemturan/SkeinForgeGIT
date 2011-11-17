@@ -231,22 +231,6 @@ import sys
 
 
 # document after stretch, then carve, comb, fill, home, inset, oozebane, raft, splodge, temperature once they are updated, maybe later subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension  http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge
-# test with difference, getRadiusByPrefix with defaultValue, insetPartialLoops, derivation
-# if there is no fill do not add fill
-# getElementsByLocalName which is the equivalent of # getElementsByTagName
-# packingDensity or density in grid - probably just density
-# document announce infillInD.. move
-# document announce smooth http://hydraraptor.blogspot.com/2010/12/frequency-limit.html _extrusion
-# document announce Maximum E Value before Reset
-# document announce Surrounding Angle up to 80
-# interim release
-#
-# announce bookend / alteration Replace Variable with Setting, change alterations to (<alterationDeleteThisPrefix/>)
-# rename homing file home
-# add volume fraction to fill
-#
-# move dimension after unpause
-# announce analyzeGcode in export
 # release
 #
 # command
@@ -257,14 +241,25 @@ import sys
 # analyze doesn't save skeinlayer settings, remember xy in skeiniso
 #
 #
+# resolve getGcodeWithoutDuplication, make better consolidate gcode command function, remove comments from addRaftedLine
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
+# consolidate layerIndex and progress
+# add volume fraction to fill
+# consider removing tower
+# add copy process function getMatchingPlugins if > 0 then if paths do paths else do solid
+# use fileSettingName to change perimeter width to extrusion width, globalSubstitutionDictionary
+# derivation starting with _inset
 # check globalExecutionOrder, ensure that bottom order is really high
 # set temperature in temperature
+# add stretch progress indicator
 # voronoi average location intersection looped inset intercircles
 # skin layers without something over the infill
 # check for last existing then remove unneeded fill code (getLastExistingFillLoops) from euclidean, add fill in penultimate loops
 # backup demozendium links
+# delete commented addInfillPerimeter
 # unpause slow flow rate instead of speeding feed rate
+# replace getRadiusByPrefix with getFloatByPrefixSide(defaultValue, elementNode, prefix + 'radius', sideLength)
+# replace getStrokeRadius in inset and outset with getRadius
 # maybe in svgReader if loop intersection with previous union else add
 # add links download manual svg_writer, add left right arrow keys to layer
 # manipulation derivations
@@ -284,6 +279,7 @@ import sys
 # profile copy / rename   /   delete, maybe move craft type to profile
 # think about rectangular getVector3RemoveByPre..
 # del previous, add begin & end if far  get actual path
+# bridge infill modifiers only in the bridge infill loop
 # linearbearingexample 15 x 1 x 2, linearbearingcage
 # polling
 # connectionfrom, to, connect, xaxis
@@ -357,6 +353,7 @@ import sys
 # probably not speed up CircleIntersection by performing isWithinCircles before creation _speed
 # don't remove brackets in early craft tools _speed
 # check bounding box when subtracting or intersecting boolean geometry
+# get arounds in inset, the inside become extrude loops and the outside below loops _speed
 #
 #
 # add hook _extrusion

@@ -217,6 +217,7 @@ def getElementNodeObject(evaluatedLinkValue):
 	'Get ElementNodeObject.'
 	if evaluatedLinkValue.__class__.__name__ != 'ElementNode':
 		print('Warning, could not get ElementNode in getElementNodeObject in evaluate for:')
+		print(evaluatedLinkValue.__class__.__name__)
 		print(evaluatedLinkValue)
 		return None
 	if evaluatedLinkValue.xmlObject == None:
@@ -344,12 +345,6 @@ def getEvaluatedFloat(defaultValue, elementNode, key):
 		return defaultValue
 	if key in elementNode.attributes:
 		return euclidean.getFloatFromValue(getEvaluatedValueObliviously(elementNode, key))
-	return defaultValue
-
-def getEvaluatedFloatByKeys(defaultValue, elementNode, keys):
-	'Get the evaluated float by keys.'
-	for key in keys:
-		defaultValue = getEvaluatedFloat(defaultValue, elementNode, key)
 	return defaultValue
 
 def getEvaluatedInt(defaultValue, elementNode, key):

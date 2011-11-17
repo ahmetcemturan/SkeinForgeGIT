@@ -1,16 +1,19 @@
 #! /usr/bin/env python
 """
 This page is in the table of contents.
-Bookend adds the start and end files to the gcode.
+The alteration plugin adds the start and end files to the gcode.
 
-The bookend manual page is at:
-http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Bookend
+This plugin also removes the alteration prefix tokens from the alteration lines.  Alteration lines have a prefix token so they can go through the craft plugins without being modified.  However, the tokens are not recognized by the firmware so they have to be removed before export. The alteration token is:
+(<alterationDeleteThisPrefix/>)
+
+The alteration manual page is at:
+http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Alteration
 
 ==Operation==
-The default 'Activate Bookend' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
+The default 'Activate Alteration' checkbox is on.  When it is on, the functions described below will work, when it is off, nothing will be done.
 
 ==Settings==
-Bookend looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Bookend does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder.
+Alteration looks for alteration files in the alterations folder in the .skeinforge folder in the home directory.  Alteration does not care if the text file names are capitalized, but some file systems do not handle file name cases properly, so to be on the safe side you should give them lower case names.  If it doesn't find the file it then looks in the alterations folder in the skeinforge_plugins folder.
 
 ===Name of End File===
 Default is 'end.gcode'.
@@ -22,18 +25,29 @@ Default is 'start.gcode'.
 
 If there is a file with the name of the "Name of Start File" setting, it will be added to the very beginning of the gcode.
 
+===Replace Variable with Setting===
+Default: True
+
+If 'Replace Variable with Setting' is selected and there is an alteration line with a setting token, the token will be replaced by the value.
+
+For example, if there is an alteration line like:
+M140 S<setting.chamber.BedTemperature>
+
+the token would be replaced with the value and assuming the bed chamber was 60.0, the output would be:
+M140 S60.0
+
 ==Examples==
-The following examples add the bookend information to the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and bookend.py.
+The following examples add the alteration information to the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and alteration.py.
 
-> python bookend.py
-This brings up the bookend dialog.
+> python alteration.py
+This brings up the alteration dialog.
 
-> python bookend.py Screw Holder Bottom.stl
-The bookend tool is parsing the file:
+> python alteration.py Screw Holder Bottom.stl
+The alteration tool is parsing the file:
 Screw Holder Bottom.stl
 ..
-The bookend tool has created the file:
-.. Screw Holder Bottom_bookend.gcode
+The alteration tool has created the file:
+.. Screw Holder Bottom_alteration.gcode
 
 """
 
@@ -57,50 +71,51 @@ __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agp
 
 
 def getCraftedText(fileName, text='', repository=None):
-	'Bookend a gcode linear move text.'
+	'Alteration a gcode linear move text.'
 	return getCraftedTextFromText(archive.getTextIfEmpty(fileName, text), repository)
 
 def getCraftedTextFromText(gcodeText, repository=None):
-	'Bookend a gcode linear move text.'
-	if gcodec.isProcedureDoneOrFileIsEmpty(gcodeText, 'bookend'):
+	'Alteration a gcode linear move text.'
+	if gcodec.isProcedureDoneOrFileIsEmpty(gcodeText, 'alteration'):
 		return gcodeText
 	if repository == None:
-		repository = settings.getReadRepository(BookendRepository())
-	if not repository.activateBookend.value:
+		repository = settings.getReadRepository(AlterationRepository())
+	if not repository.activateAlteration.value:
 		return gcodeText
-	return BookendSkein().getCraftedGcode(gcodeText, repository)
+	return AlterationSkein().getCraftedGcode(gcodeText, repository)
 
 def getNewRepository():
 	'Get new repository.'
-	return BookendRepository()
+	return AlterationRepository()
 
 def writeOutput(fileName, shouldAnalyze=True):
-	'Bookend a gcode linear move file.  Chain bookend the gcode if the bookend procedure has not been done.'
-	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'bookend', shouldAnalyze)
+	'Alteration a gcode linear move file.  Chain alteration the gcode if the alteration procedure has not been done.'
+	skeinforge_craft.writeChainTextWithNounMessage(fileName, 'alteration', shouldAnalyze)
 
 
-class BookendRepository:
-	"A class to handle the bookend settings."
+class AlterationRepository:
+	"A class to handle the alteration settings."
 	def __init__(self):
 		"Set the default settings, execute title & settings fileName."
-		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.bookend.html', self )
-		self.fileNameInput = settings.FileNameInput().getFromFileName(fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Bookend', self, '')
-		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Bookend')
-		self.activateBookend = settings.BooleanSetting().getFromValue('Activate Bookend', self, True)
+		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.alteration.html', self )
+		self.baseNameSynonym = 'bookend.csv'
+		self.fileNameInput = settings.FileNameInput().getFromFileName(fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Alteration', self, '')
+		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Alteration')
+		self.activateAlteration = settings.BooleanSetting().getFromValue('Activate Alteration', self, True)
 		self.nameOfEndFile = settings.StringSetting().getFromValue('Name of End File:', self, 'end.gcode')
 		self.nameOfStartFile = settings.StringSetting().getFromValue('Name of Start File:', self, 'start.gcode')
 		self.replaceVariableWithSetting = settings.BooleanSetting().getFromValue('Replace Variable with Setting', self, True)
-		self.executeTitle = 'Bookend'
+		self.executeTitle = 'Alteration'
 
 	def execute(self):
-		'Bookend button has been clicked.'
+		'Alteration button has been clicked.'
 		fileNames = skeinforge_polyfile.getFileOrDirectoryTypesUnmodifiedGcode(self.fileNameInput.value, fabmetheus_interpret.getImportPluginFileNames(), self.fileNameInput.wasCancelled)
 		for fileName in fileNames:
 			writeOutput(fileName)
 
 
-class BookendSkein:
-	"A class to bookend a skein of extrusions."
+class AlterationSkein:
+	"A class to alteration a skein of extrusions."
 	def __init__(self):
 		'Initialize.'
  		self.distanceFeedRate = gcodec.DistanceFeedRate()
@@ -162,7 +177,7 @@ class BookendSkein:
 			firstWord = gcodec.getFirstWord(splitLine)
 			self.distanceFeedRate.parseSplitLine(firstWord, splitLine)
 			if firstWord == '(</extruderInitialization>)':
-				self.distanceFeedRate.addTagBracketedProcedure('bookend')
+				self.distanceFeedRate.addTagBracketedProcedure('alteration')
 				return
 			self.distanceFeedRate.addLine(line)
 
@@ -186,7 +201,7 @@ class BookendSkein:
 
 
 def main():
-	"Display the bookend dialog."
+	"Display the alteration dialog."
 	if len(sys.argv) > 1:
 		writeOutput(' '.join(sys.argv[1 :]))
 	else:
