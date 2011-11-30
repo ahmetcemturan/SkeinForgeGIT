@@ -290,12 +290,18 @@ class DimensionSkein:
 		scaledFlowRate = self.flowRate * self.flowScaleSixty
 		return self.getExtrusionDistanceStringFromExtrusionDistance(scaledFlowRate / self.feedRateMinute * distance)
 
-	def getExtrusionDistanceStringFromExtrusionDistance( self, extrusionDistance ):
+	def getExtrusionDistanceStringFromExtrusionDistance(self, extrusionDistance):
 		'Get the extrusion distance string from the extrusion distance.'
 		if self.repository.relativeExtrusionDistance.value:
-			return ' E' + self.distanceFeedRate.getRounded( extrusionDistance )
+			if self.distanceFeedRate.getRounded(extrusionDistance) == '9e-05':
+				print(  'extrusionDistance')
+				print(  extrusionDistance)
+				print(  self.distanceFeedRate.getRounded(extrusionDistance))
+				print(  self.distanceFeedRate.decimalPlacesCarried)
+				print(  round(extrusionDistance, self.distanceFeedRate.decimalPlacesCarried))
+			return ' E' + self.distanceFeedRate.getRounded(extrusionDistance)
 		self.totalExtrusionDistance += extrusionDistance
-		return ' E' + self.distanceFeedRate.getRounded( self.totalExtrusionDistance )
+		return ' E' + self.distanceFeedRate.getRounded(self.totalExtrusionDistance)
 
 	def getRetractionRatio(self, lineIndex):
 		'Get the retraction ratio.'

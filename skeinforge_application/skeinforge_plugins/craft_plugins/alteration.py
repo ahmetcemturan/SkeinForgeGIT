@@ -31,9 +31,11 @@ Default: True
 If 'Replace Variable with Setting' is selected and there is an alteration line with a setting token, the token will be replaced by the value.
 
 For example, if there is an alteration line like:
+
 M140 S<setting.chamber.BedTemperature>
 
 the token would be replaced with the value and assuming the bed chamber was 60.0, the output would be:
+
 M140 S60.0
 
 ==Examples==

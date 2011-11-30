@@ -53,7 +53,3 @@ class CopyDerivation:
 	def __init__(self, elementNode):
 		'Set defaults.'
 		self.target = evaluate.getElementNodeByKey(elementNode, 'target')
-
-	def __repr__(self):
-		"Get the string representation of this CopyDerivation."
-		return str(self.__dict__)

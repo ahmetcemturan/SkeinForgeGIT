@@ -63,8 +63,6 @@ def getMinimumZ(geometryObject):
 	booleanGeometry.layerThickness = setting.getLayerThickness(geometryObject.elementNode)
 	archivableMinimumZ = booleanGeometry.getMinimumZ()
 	geometryMinimumZ = geometryObject.getMinimumZ()
-	if archivableMinimumZ == None and geometryMinimumZ == None:
-		return None
 	if archivableMinimumZ == None:
 		return geometryMinimumZ
 	if geometryMinimumZ == None:

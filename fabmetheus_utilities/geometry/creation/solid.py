@@ -74,10 +74,10 @@ def processArchiveRemoveSolid(elementNode, geometryOutput):
 	solidMatchingPlugins = getSolidMatchingPlugins(elementNode)
 	if len(solidMatchingPlugins) < 1:
 		elementNode.parentNode.xmlObject.archivableObjects.append(elementNode.xmlObject)
+		matrix.getBranchMatrixSetElementNode(elementNode)
 		return
 	processElementNodeByGeometry(elementNode, getGeometryOutputByManipulation(elementNode, geometryOutput))
 	elementNode.removeFromIDNameParent()
-	matrix.getBranchMatrixSetElementNode(elementNode)
 
 def processElementNodeByFunction(elementNode, manipulationFunction):
 	'Process the xml element.'
@@ -127,7 +127,3 @@ class SolidDerivation:
 	def __init__(self, elementNode):
 		'Set defaults.'
 		self.target = evaluate.getTransformedPathsByKey([], elementNode, 'target')
-
-	def __repr__(self):
-		'Get the string representation of this SolidDerivation.'
-		return str(self.__dict__)

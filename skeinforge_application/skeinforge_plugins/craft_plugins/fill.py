@@ -876,8 +876,8 @@ class FillSkein:
 		if rotatedLayer.rotation != None:
 			extraShells = 0
 		self.distanceFeedRate.addLine('(<rotation> %s )' % layerRotation)
-		aroundInset = 0.267 * self.infillWidth
-		aroundWidth = 0.267 * self.infillWidth
+		aroundInset = 0.24321 * self.infillWidth
+		aroundWidth = 0.24321 * self.infillWidth
 		doubleInfillWidth = 2.0 * self.infillWidth
 		gridPointInsetX = 0.5 * self.fillInset
 		self.lastExtraShells = extraShells

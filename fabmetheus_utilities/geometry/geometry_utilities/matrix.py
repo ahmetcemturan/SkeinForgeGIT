@@ -244,6 +244,8 @@ def getTetragridC(elementNode, prefix, tetragrid):
 
 def getTetragridCopy(tetragrid):
 	'Get tetragrid copy.'
+	if tetragrid == None:
+		return None
 	tetragridCopy = []
 	for tetragridRow in tetragrid:
 		tetragridCopy.append(tetragridRow[:])
@@ -394,9 +396,6 @@ class Matrix:
 	'A four by four matrix.'
 	def __init__(self, tetragrid=None):
 		'Add empty lists.'
-		if tetragrid == None:
-			self.tetragrid = None
-			return
 		self.tetragrid = getTetragridCopy(tetragrid)
 
 	def __eq__(self, other):
