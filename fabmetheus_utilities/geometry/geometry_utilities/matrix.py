@@ -31,15 +31,12 @@ def addVertexes(geometryOutput, vertexes):
 		for element in geometryOutput:
 			addVertexes(element, vertexes)
 		return
-	if geometryOutput.__class__ != dict:
-		return
-	for geometryOutputKey in geometryOutput.keys():
-		geometryOutputValue = geometryOutput[geometryOutputKey]
-		if geometryOutputKey == 'vertex':
-			for vertex in geometryOutputValue:
-				vertexes.append(vertex)
-		else:
-			addVertexes(geometryOutputValue, vertexes)
+	if geometryOutput.__class__ == dict:
+		for geometryOutputKey in geometryOutput.keys():
+			if geometryOutputKey == 'vertex':
+				vertexes += geometryOutput[geometryOutputKey]
+			else:
+				addVertexes(geometryOutput[geometryOutputKey], vertexes)
 
 def getBranchMatrix(elementNode):
 	'Get matrix starting from the object if it exists, otherwise get a matrix starting from stratch.'
@@ -387,9 +384,14 @@ def setElementNodeDictionaryMatrix(elementNode, matrix4X4):
 	else:
 		elementNode.xmlObject.matrix4X4 = matrix4X4
 
-def transformVector3ByMatrix( tetragrid, vector3 ):
+def transformVector3ByMatrix(tetragrid, vector3):
 	'Transform the vector3 by a matrix.'
 	vector3.setToVector3(getTransformedVector3(tetragrid, vector3))
+
+def transformVector3sByMatrix(tetragrid, vector3s):
+	'Transform the vector3s by a matrix.'
+	for vector3 in vector3s:
+		vector3.setToVector3(getTransformedVector3(tetragrid, vector3))
 
 
 class Matrix:

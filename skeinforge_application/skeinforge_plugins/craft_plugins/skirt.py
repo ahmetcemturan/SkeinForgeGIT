@@ -154,7 +154,6 @@ class SkirtSkein:
 		self.feedRateMinute = 961.0
 		self.isExtruderActive = False
 		self.isSupportLayer = False
-		self.layerCount = settings.LayerCount()
 		self.layerIndex = -1
 		self.lineIndex = 0
 		self.lines = None
@@ -250,7 +249,7 @@ class SkirtSkein:
 				layerIndex += 1
 				if layerIndex > self.repository.layersTo.value:
 					return
-				self.layerCount.printProgressIncrement('skirt')
+				settings.printProgress(layerIndex, 'skirt')
 
 	def parseInitialization(self):
 		'Parse gcode initialization and store the parameters.'

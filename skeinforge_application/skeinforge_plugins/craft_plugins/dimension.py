@@ -293,12 +293,6 @@ class DimensionSkein:
 	def getExtrusionDistanceStringFromExtrusionDistance(self, extrusionDistance):
 		'Get the extrusion distance string from the extrusion distance.'
 		if self.repository.relativeExtrusionDistance.value:
-			if self.distanceFeedRate.getRounded(extrusionDistance) == '9e-05':
-				print(  'extrusionDistance')
-				print(  extrusionDistance)
-				print(  self.distanceFeedRate.getRounded(extrusionDistance))
-				print(  self.distanceFeedRate.decimalPlacesCarried)
-				print(  round(extrusionDistance, self.distanceFeedRate.decimalPlacesCarried))
 			return ' E' + self.distanceFeedRate.getRounded(extrusionDistance)
 		self.totalExtrusionDistance += extrusionDistance
 		return ' E' + self.distanceFeedRate.getRounded(self.totalExtrusionDistance)
@@ -387,6 +381,7 @@ class DimensionSkein:
 			self.absoluteDistanceMode = False
 		elif firstWord == '(<layer>':
 			self.layerIndex += 1
+			settings.printProgress(self.layerIndex, 'dimension')
 		elif firstWord == 'M101':
 			self.addLinearMoveExtrusionDistanceLine(self.restartDistance * self.retractionRatio)
 			if self.totalExtrusionDistance > self.repository.maximumEValueBeforeReset.value: 
