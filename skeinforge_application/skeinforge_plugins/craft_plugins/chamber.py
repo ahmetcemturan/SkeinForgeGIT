@@ -202,7 +202,13 @@ class ChamberRepository:
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getGNUTranslatorGcodeFileTypeTuples(), 'Open File for Chamber', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Chamber')
 		self.activateChamber = settings.BooleanSetting().getFromValue('Activate Chamber', self, True )
-		self.bedTemperature = settings.FloatSpin().getFromValue( 20.0, 'Bed Temperature (Celcius):', self, 90.0, 60.0 )
+		settings.LabelSeparator().getFromRepository(self)
+		settings.LabelDisplay().getFromName('- Bed -', self )
+		self.bedTemperature = settings.FloatSpin().getFromValue(20.0, 'Bed Temperature (Celcius):', self, 90.0, 60.0)
+		self.bedTemperatureBeginChangeHeight = settings.FloatSpin().getFromValue(-1.0, 'Bed Temperature Begin Change Height (mm):', self, 20.0, -1.0)
+		self.bedTemperatureEndChangeHeight = settings.FloatSpin().getFromValue(-1.0, 'Bed Temperature End Change Height (mm):', self, 40.0, -1.0)
+		self.bedTemperatureEnd = settings.FloatSpin().getFromValue(20.0, 'Bed Temperature End (Celcius):', self, 90.0, 20.0)
+		settings.LabelSeparator().getFromRepository(self)
 		self.chamberTemperature = settings.FloatSpin().getFromValue( 20.0, 'Chamber Temperature (Celcius):', self, 90.0, 30.0 )
 		self.holdingForce = settings.FloatSpin().getFromValue( 0.0, 'Holding Force (bar):', self, 100.0, 0.0 )
 		self.executeTitle = 'Chamber'
@@ -218,12 +224,24 @@ class ChamberRepository:
 class ChamberSkein:
 	"A class to chamber a skein of extrusions."
 	def __init__(self):
+		'Initialize.'
+		self.changeWidth = None
 		self.distanceFeedRate = gcodec.DistanceFeedRate()
 		self.lineIndex = 0
 		self.lines = None
+		self.oldBedTemperature = None
+
+	def addBedTemperature(self, bedTemperature):
+		'Add bed temperature if it is different from the old.'
+		if bedTemperature != self.oldBedTemperature:
+			self.distanceFeedRate.addParameter('M140', bedTemperature)
+			self.oldBedTemperature = bedTemperature
 
 	def getCraftedGcode(self, gcodeText, repository):
 		"Parse gcode text and store the chamber gcode."
+		endAtLeastBegin = repository.bedTemperatureEndChangeHeight.value >= repository.bedTemperatureBeginChangeHeight.value
+		if endAtLeastBegin and repository.bedTemperatureBeginChangeHeight.value >= 0.0:
+			self.changeWidth = repository.bedTemperatureEndChangeHeight.value - repository.bedTemperatureBeginChangeHeight.value
 		self.repository = repository
 		self.lines = archive.getTextLines(gcodeText)
 		self.parseInitialization()
@@ -251,11 +269,20 @@ class ChamberSkein:
 		firstWord = splitLine[0]
 		if firstWord == '(<crafting>)':
 			self.distanceFeedRate.addLine(line)
-			self.distanceFeedRate.addParameter('M140', self.repository.bedTemperature.value ) # Set bed temperature.
-			self.distanceFeedRate.addParameter('M141', self.repository.chamberTemperature.value ) # Set chamber temperature.
-			self.distanceFeedRate.addParameter('M142', self.repository.holdingForce.value ) # Set holding pressure.
+			self.addBedTemperature(self.repository.bedTemperature.value)
+			self.distanceFeedRate.addParameter('M141', self.repository.chamberTemperature.value) # Set chamber temperature.
+			self.distanceFeedRate.addParameter('M142', self.repository.holdingForce.value) # Set holding pressure.
 			return
 		self.distanceFeedRate.addLine(line)
+		if firstWord == '(<layer>' and self.changeWidth != None:
+			z = float(splitLine[1])
+			if z >= self.repository.bedTemperatureEndChangeHeight.value:
+				self.addBedTemperature(self.repository.bedTemperatureEnd.value)
+				return
+			if z <= self.repository.bedTemperatureBeginChangeHeight.value:
+				return
+			along = (z - self.repository.bedTemperatureBeginChangeHeight.value) / self.changeWidth
+			self.addBedTemperature(self.repository.bedTemperature.value * (1 - along) + self.repository.bedTemperatureEnd.value * along)
 
 
 def main():

@@ -234,12 +234,14 @@ import sys
 # wiki document help, description, polyfile
 # subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension  http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge
 #
-# add copy process function getMatchingPlugins if > 0 then if paths do paths else do solid
-# check if tetragrid is identical before multiplication
-# look into mirroring cube at origin
-# some kind of gradual bed temperature Bed Temperature Begin Change Height, End Change Height, End
+# outset solid
+# comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
+# global simplify pathBetween
+# comb documentation
 # backup demozendium links
+# contract wipe titles
 # replace layer thickness with layer height, replace baseLayerThickness.. with baseLayerHeightMultiplier, consolidate Object First Layer Flow
+# document announce gradual bed temperature Bed Temperature Begin Change Height, End Change Height, End Temperature
 # announce
 # question, should 'Infill Odd Layer Extra Rotation' be dropped
 #
@@ -250,19 +252,15 @@ import sys
 #
 #
 #
-# comb -> maybe add back running jump look at outside loops only for jump, find closest points, find slightly away inside points, link
-# global simplify pathBetween
-# comb documentation
 # retraction step leave
 # melt _extrusion
 # resolve getGcodeWithoutDuplication, make better consolidate gcode command function, remove comments from addRaftedLine
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
 # add volume fraction to fill
-# consider removing tower
+# fix tower perimeter line start problem
 # use fileSettingName to change perimeter width to extrusion width, globalSubstitutionDictionary
 # check globalExecutionOrder, ensure that bottom order is really high
 # set temperature in temperature
-# contract wipe titles
 # maybe rename geometry_plugins xml
 # dwindle or dawdle or taper
 # voronoi average location intersection looped inset intercircles
