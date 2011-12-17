@@ -545,7 +545,7 @@ class RaftSkein:
 		if len(endpoints) < 1:
 			return
 		aroundPixelTable = {}
-		aroundWidth = 0.24321 * step
+		aroundWidth = 0.34321 * step
 		paths = euclidean.getPathsFromEndpoints(endpoints, 1.5 * step, aroundPixelTable, aroundWidth)
 		self.addLayerLine(z)
 		if self.oldFlowRate != None:
@@ -652,30 +652,6 @@ class RaftSkein:
 				temperature = self.objectFirstLayerInfillTemperature
 		self.addTemperatureLineIfDifferent(temperature)
 		self.distanceFeedRate.addGcodeMovementZWithFeedRate(self.feedRateMinute, self.oldLocation.dropAxis(), z)
-		return ###
-		location = gcodec.getLocationFromSplitLine(self.oldLocation, splitLine)
-		feedRateMinuteMultiplied = self.feedRateMinute
-		self.oldLocation = location
-		z = location.z
-		if self.operatingJump != None:
-			z += self.operatingJump
-		flowRate = self.oldFlowRate
-		temperature = self.objectNextLayersTemperature
-		if self.layerIndex == 0:
-			if self.isPerimeterPath:
-				feedRateMinuteMultiplied *= self.repository.objectFirstLayerFeedRatePerimeterMultiplier.value
-				if flowRate != None:
-					flowRate *= self.repository.objectFirstLayerFlowRatePerimeterMultiplier.value
-				temperature = self.objectFirstLayerPerimeterTemperature
-			else:
-				feedRateMinuteMultiplied *= self.objectFirstLayerFeedRateInfillMultiplier
-				if flowRate != None:
-					flowRate *= self.objectFirstLayerFlowRateInfillMultiplier
-				temperature = self.objectFirstLayerInfillTemperature
-		self.addFlowRate(flowRate)
-		self.addTemperatureLineIfDifferent(temperature)
-		self.distanceFeedRate.addGcodeMovementZWithFeedRate(feedRateMinuteMultiplied, location.dropAxis(), z)
-		self.addFlowRate(self.oldFlowRate)
 
 	def addRaftPerimeters(self):
 		'Add raft perimeters if there is a raft.'
@@ -721,7 +697,7 @@ class RaftSkein:
 		self.distanceFeedRate.addLinesSetAbsoluteDistanceMode(self.supportStartLines)
 		self.addTemperatureOrbits(endpoints, self.supportedLayersTemperature, z)
 		aroundPixelTable = {}
-		aroundWidth = 0.24321 * self.interfaceStep
+		aroundWidth = 0.34321 * self.interfaceStep
 		boundaryLoops = self.boundaryLayers[self.layerIndex].loops
 		halfSupportOutset = 0.5 * self.supportOutset
 		aroundBoundaryLoops = intercircle.getAroundsFromLoops(boundaryLoops, halfSupportOutset)

@@ -359,7 +359,7 @@ def getIndexedLoopFromIndexedGrid( indexedGrid ):
 		indexedLoop.append( row[0] )
 	return indexedLoop
 
-def getInfillDictionary(aroundInset, arounds, aroundWidth, infillInset, infillWidth, pixelTable, rotatedLoops, testLoops=None):
+def getInfillDictionary(arounds, aroundWidth, infillInset, infillWidth, pixelTable, rotatedLoops, testLoops=None):
 	'Get combined fill loops which include most of the points.'
 	slightlyGreaterThanInfillInset = intercircle.globalIntercircleMultiplier * infillInset
 	allPoints = intercircle.getPointsFromLoops(rotatedLoops, infillInset, 0.7)
@@ -369,7 +369,7 @@ def getInfillDictionary(aroundInset, arounds, aroundWidth, infillInset, infillWi
 		insetCenter = intercircle.getSimplifiedInsetFromClockwiseLoop(center, infillInset)
 		insetPoint = insetCenter[0]
 		if len(insetCenter) > 2 and intercircle.getIsLarge(insetCenter, infillInset) and euclidean.getIsInFilledRegion(rotatedLoops, insetPoint):
-			around = intercircle.getSimplifiedInsetFromClockwiseLoop(center, aroundInset)
+			around = euclidean.getSimplifiedLoop(center, infillInset)
 			euclidean.addLoopToPixelTable(around, pixelTable, aroundWidth)
 			arounds.append(around)
 			insetLoop = intercircle.getSimplifiedInsetFromClockwiseLoop(center, infillInset)

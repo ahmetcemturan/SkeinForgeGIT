@@ -234,9 +234,8 @@ import sys
 # wiki document help, description, polyfile
 # subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension  http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge
 #
-# comb add point a bit before and a bit after  		test with return pathAround in getSimplifiedAroundPath  delete getInsideness
-# global simplify pathBetween
 # outset solid
+# resolve getGcodeWithoutDuplication, make better consolidate gcode command function, remove comments from addRaftedLine
 # backup demozendium links
 # contract wipe titles
 # replace layer thickness with layer height, replace baseLayerThickness.. with baseLayerHeightMultiplier, consolidate Object First Layer Flow
@@ -253,9 +252,9 @@ import sys
 #
 # retraction step leave
 # melt _extrusion
-# resolve getGcodeWithoutDuplication, make better consolidate gcode command function, remove comments from addRaftedLine
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
 # add volume fraction to fill
+# look at loop end removed bug in upper loop of layer 8 of Screw_Holder_alteration
 # fix tower perimeter line start problem
 # use fileSettingName to change perimeter width to extrusion width, globalSubstitutionDictionary
 # check globalExecutionOrder, ensure that bottom order is really high

@@ -179,9 +179,8 @@ class SkinSkein:
 
 	def addSkinnedInfillBoundary(self, infillBoundaries, offsetY, upperZ, z):
 		'Add skinned infill boundary.'
-		aroundInset = 0.24321 * self.skinInfillInset
 		arounds = []
-		aroundWidth = 0.24321 * self.skinInfillInset
+		aroundWidth = 0.34321 * self.skinInfillInset
 		endpoints = []
 		pixelTable = {}
 		rotatedLoops = []
@@ -192,7 +191,7 @@ class SkinSkein:
 					infillBoundaryRotated[infillPointRotatedIndex] = complex(infillPointRotated.real, infillPointRotated.imag - offsetY)
 			rotatedLoops.append(infillBoundaryRotated)
 		infillDictionary = triangle_mesh.getInfillDictionary(
-			aroundInset, arounds, aroundWidth, self.skinInfillInset, self.skinInfillWidth, pixelTable, rotatedLoops)
+			arounds, aroundWidth, self.skinInfillInset, self.skinInfillWidth, pixelTable, rotatedLoops)
 		for infillDictionaryKey in infillDictionary.keys():
 			xIntersections = infillDictionary[infillDictionaryKey]
 			xIntersections.sort()

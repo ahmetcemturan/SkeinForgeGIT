@@ -139,7 +139,6 @@ def getGcodeWithoutDuplication(duplicateWord, gcodeText):
 			if len(line) > 0:
 				output.write(line + '\n')
 	return output.getvalue() ###
-	return gcodeText
 	isExtruderActive = False
 	lines = archive.getTextLines(gcodeText)
 	oldDuplicationIndex = None
