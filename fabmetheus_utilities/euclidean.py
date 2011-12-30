@@ -1023,12 +1023,10 @@ def getJoinOfXIntersectionIndexes( xIntersectionIndexList ):
 
 def getLargestLoop(loops):
 	'Get largest loop from loops.'
-	if len(loops) == 1:
-		return loops[0]
-	largestArea = - 987654321.0
+	largestArea = -987654321.0
 	largestLoop = []
 	for loop in loops:
-		loopArea = abs( getAreaLoop(loop) )
+		loopArea = abs(getAreaLoopAbsolute(loop))
 		if loopArea > largestArea:
 			largestArea = loopArea
 			largestLoop = loop

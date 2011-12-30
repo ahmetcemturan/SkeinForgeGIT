@@ -210,6 +210,16 @@ def addSymmetricYPaths(outputs, paths, y):
 	for path in paths:
 		addSymmetricYPath(outputs, path, y)
 
+def addVector3Loop(loop, loops, vertexes, z):
+	'Add vector3Loop to loops if there is something in it, for inset and outset.'
+	vector3Loop = []
+	for point in loop:
+		vector3Index = Vector3Index(len(vertexes), point.real, point.imag, z)
+		vector3Loop.append(vector3Index)
+		vertexes.append(vector3Index)
+	if len(vector3Loop) > 0:
+		loops.append(vector3Loop)
+
 def addWithLeastLength(importRadius, loops, point):
 	'Insert a point into a loop, at the index at which the loop would be shortest.'
 	close = 1.65 * importRadius # a bit over the experimental minimum additional loop length to restore a right angle

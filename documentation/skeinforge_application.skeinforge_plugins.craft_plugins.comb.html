@@ -13,12 +13,10 @@
 <a href="skeinforge_application.skeinforge_plugins.craft_plugins.coil.html">Previous</a> / <a href="skeinforge_application.skeinforge_plugins.craft_plugins.cool.html">Next</a> / <a href="contents.html">Contents</a>
 </p>
 <p><tt><br>
-Comb is a craft tool to comb the extrusion hair of a gcode file.<br>
+Comb is a craft plugin to bend the extruder travel paths around holes in the slices, to avoid stringers.<br>
  <br>
 The comb manual page is at:<br>
 <a href="http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Comb">http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Comb</a><br>
- <br>
-Comb bends the extruder travel paths around holes in the slices, to avoid stringers.  It moves the extruder to the inside of perimeters before turning the extruder on so any start up ooze will be inside the shape.<br>
  <br>
 <br />
 <a href="#Operation">Operation</a><br />
@@ -29,14 +27,16 @@ Comb bends the extruder travel paths around holes in the slices, to avoid string
 <a name="Operation" id="Operation"></a><h2>Operation</h2>
 <hr>
 
-The default 'Activate Comb' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.<br>
+The default 'Activate Comb' checkbox is off.  When it is on, the functions described below will work, when it is off, nothing will be done.<br>
  <br>
 <a name="Settings" id="Settings"></a><h2>Settings</h2>
 <hr>
 
 <a name="Running Jump Space" id="Running Jump Space"></a><h3>Running Jump Space</h3>
 
-Placeholder.<br>
+Default: 2 mm<br>
+ <br>
+Defines the running jump space that is added before going from one island to another.  If the running jump space is greater than zero, the departure from the island will also be brought closer to the arrival point on the next island so that the stringer between islands will be shorter.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer between islands will be thinner.<br>
  <br>
 <a name="Examples" id="Examples"></a><h2>Examples</h2>
 <hr>

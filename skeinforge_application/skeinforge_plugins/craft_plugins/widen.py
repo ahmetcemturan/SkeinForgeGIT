@@ -101,7 +101,7 @@ def getWidenedLoop(loop, loopList, outsetLoop, radius):
 	intersectingWithinLoops = getIntersectingWithinLoops(loop, loopList, outsetLoop)
 	if len(intersectingWithinLoops) < 1:
 		return loop
-	loopsUnified = boolean_solid.getLoopsUnified(radius, [[loop], intersectingWithinLoops])
+	loopsUnified = boolean_solid.getLoopsUnion(radius, [[loop], intersectingWithinLoops])
 	if len(loopsUnified) < 1:
 		return loop
 	return euclidean.getLargestLoop(loopsUnified)

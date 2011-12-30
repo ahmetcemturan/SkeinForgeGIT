@@ -121,7 +121,7 @@ def getLoopsDifference(importRadius, loopLists):
 	'Get difference loops.'
 	halfImportRadius = 0.5 * importRadius # so that there are no misses on shallow angles
 	radiusSide = 0.01 * importRadius
-	negativeLoops = getLoopsUnified(importRadius, loopLists[1 :])
+	negativeLoops = getLoopsUnion(importRadius, loopLists[1 :])
 	intercircle.directLoops(False, negativeLoops)
 	positiveLoops = loopLists[0]
 	intercircle.directLoops(True, positiveLoops)
@@ -173,7 +173,7 @@ def getLoopsLoopsIntersections( loops, otherLoops ):
 		addLoopLoopsIntersections( loop, loopsLoopsIntersections, otherLoops )
 	return loopsLoopsIntersections
 
-def getLoopsUnified(importRadius, loopLists):
+def getLoopsUnion(importRadius, loopLists):
 	'Get joined loops sliced through shape.'
 	allPoints = []
 	corners = getLoopsListsIntersections(loopLists)
@@ -228,7 +228,7 @@ class BooleanSolid( group.Group ):
 
 	def getUnion(self, importRadius, visibleObjectLoopsList):
 		'Get joined loops sliced through shape.'
-		return getLoopsUnified(importRadius, visibleObjectLoopsList)
+		return getLoopsUnion(importRadius, visibleObjectLoopsList)
 
 	def getXMLLocalName(self):
 		'Get xml class name.'

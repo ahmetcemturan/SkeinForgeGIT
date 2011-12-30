@@ -234,13 +234,12 @@ import sys
 # wiki document help, description, polyfile
 # subplugins like export static, maybe later mill cut and coil plugins, maybe later still export plugins & change file extension to output file extension  http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge
 #
-# outset solid
-# resolve getGcodeWithoutDuplication, make better consolidate gcode command function, remove comments from addRaftedLine
 # backup demozendium links
 # contract wipe titles
 # replace layer thickness with layer height, replace baseLayerThickness.. with baseLayerHeightMultiplier, consolidate Object First Layer Flow
-# document announce gradual bed temperature Bed Temperature Begin Change Height, End Change Height, End Temperature
-# document announce comb running jump
+# announce alteration removeRedundantMcode
+# announce chamber gradual bed temperature Bed Temperature Begin Change Height, End Change Height, End Temperature
+# announce comb running jump
 # question, should 'Infill Odd Layer Extra Rotation' be dropped
 #
 # unimportant
@@ -254,12 +253,14 @@ import sys
 # melt _extrusion
 # think about http://code.google.com/p/skeinarchiver/ and/or undo
 # add volume fraction to fill
+# getStrokeRadius default to edgeWidth
 # look at loop end removed bug in upper loop of layer 8 of Screw_Holder_alteration
 # fix tower perimeter line start problem
 # use fileSettingName to change perimeter width to extrusion width, globalSubstitutionDictionary
 # check globalExecutionOrder, ensure that bottom order is really high
 # set temperature in temperature
 # maybe rename geometry_plugins xml
+# maybe add carve preview, opening it up in browser
 # dwindle or dawdle or taper
 # voronoi average location intersection looped inset intercircles
 # skin layers without something over the infill

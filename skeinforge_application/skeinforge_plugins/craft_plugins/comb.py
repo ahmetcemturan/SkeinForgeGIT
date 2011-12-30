@@ -1,18 +1,18 @@
 """
 This page is in the table of contents.
-Comb is a craft tool to comb the extrusion hair of a gcode file.
+Comb is a craft plugin to bend the extruder travel paths around holes in the slices, to avoid stringers.
 
 The comb manual page is at:
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Comb
 
-Comb bends the extruder travel paths around holes in the slices, to avoid stringers.  It moves the extruder to the inside of perimeters before turning the extruder on so any start up ooze will be inside the shape.
-
 ==Operation==
-The default 'Activate Comb' checkbox is off.  When it is on, the functions described below will work, when it is off, the functions will not be called.
+The default 'Activate Comb' checkbox is off.  When it is on, the functions described below will work, when it is off, nothing will be done.
 
 ==Settings==
 ===Running Jump Space===
-Placeholder.
+Default: 2 mm
+
+Defines the running jump space that is added before going from one island to another.  If the running jump space is greater than zero, the departure from the island will also be brought closer to the arrival point on the next island so that the stringer between islands will be shorter.  For an extruder with acceleration code, an extra space before leaving the island means that it will be going at high speed as it exits the island, which means the stringer between islands will be thinner.
 
 ==Examples==
 The following examples comb the file Screw Holder Bottom.stl.  The examples are run in a terminal in the folder which contains Screw Holder Bottom.stl and comb.py.
