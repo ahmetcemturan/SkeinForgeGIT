@@ -11,21 +11,39 @@ The chamber manual page is at:
 http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Chamber
 
 ==Operation==
-The default 'Activate Chamber' checkbox is on.  When it is on, the functions described below will work, when it is off, the functions will not be called.
+The default 'Activate Chamber' checkbox is on.  When it is on, the functions described below will work, when it is off, nothing will be done.
 
 ==Settings==
-===Bed Temperature===
-Default is 60C.
+===Bed===
+The initial bed temperature is defined by 'Bed Temperature'.  If the 'Bed Temperature End Change Height' is greater or equal to the 'Bed Temperature Begin Change Height' and the 'Bed Temperature Begin Change Height' is greater or equal to zero, then the temperature will be ramped toward the 'Bed Temperature End'.  The ramp will start once the extruder reaches the 'Bed Temperature Begin Change Height', then the bed temperature will approach the 'Bed Temperature End' as the extruder reaches the 'Bed Temperature End Change Height', finally the bed temperature will stay at the 'Bed Temperature End' for the remainder of the build.
 
-Defines the print_bed temperature in Celcius by adding an M140 command.
+====Bed Temperature====
+Default: 60C
+
+Defines the initial print bed temperature in Celcius by adding an M140 command.
+
+====Bed Temperature Begin Change Height====
+Default: -1 mm
+
+Defines the height of the beginning of the temperature ramp.  If the 'Bed Temperature End Change Height' is less than zero, the bed temperature will remain at the initial 'Bed Temperature'.
+
+====Bed Temperature End Change Height====
+Default: -1 mm
+
+Defines the height of the end of the temperature ramp.  If the 'Bed Temperature End Change Height' is less than zero or less than the 'Bed Temperature Begin Change Height', the bed temperature will remain at the initial 'Bed Temperature'.
+
+====Bed Temperature End====
+Default: 20C
+
+Defines the end bed temperature if there is a temperature ramp.
 
 ===Chamber Temperature===
-Default is 30C.
+Default: 30C
 
 Defines the chamber temperature in Celcius by adding an M141 command.
 
 ===Holding Force===
-Default is zero.
+Default: 0
 
 Defines the holding pressure of a mechanism, like a vacuum table or electromagnet, to hold the bed surface or object, by adding an M142 command.  The holding pressure is in bars. For hardware which only has on/off holding, when the holding pressure is zero, turn off holding, when the holding pressure is greater than zero, turn on holding. 
 
@@ -73,11 +91,6 @@ http://www.hive76.org/handling-hot-build-surfaces
 
 http://www.hive76.org/heated-build-stage-success
 
-===Kulitorum===
-Kulitorum has made a heated bed.  It is a 5mm Alu sheet with a pattern laid out in kapton tape.  The wire is a 0.6mm2 Konstantin wire and it's held in place by small pieces of kapton tape.  The description and picture is at:
-
-http://gallery.kulitorum.com/main.php?g2_itemId=283
-
 ===Metalab===
 A heated base by the Metalab folks:
 
@@ -112,15 +125,6 @@ with articles at:
 http://prusadjs.cz/2010/01/heated-reprap-print-bed-mk2/
 
 http://prusadjs.cz/2009/11/look-ma-no-warping-heated-reprap-print-bed/
-
-===Pumpernickel2===
-A resistor heated aluminum plate by Pumpernickel2:
-
-http://dev.forums.reprap.org/profile.php?14,844
-
-with a picture at:
-
-http://dev.forums.reprap.org/file.php?14,file=1228,filename=heatedplate.jpg
 
 ===Zaggo===
 A resistor heated aluminum plate by Zaggo at Pleasant Software:
