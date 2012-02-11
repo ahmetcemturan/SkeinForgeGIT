@@ -201,6 +201,11 @@ def isProcedureDone(gcodeText, procedure):
 		return False
 	extruderInitializationIndex = gcodeText.find('(</extruderInitialization>)')
 	if extruderInitializationIndex == -1:
+		metadataBeginIndex = gcodeText.find('<metadata>')
+		metadataEndIndex = gcodeText.find('</metadata>')
+		if metadataBeginIndex != -1 and metadataEndIndex != -1:
+			attributeString = "procedureName='%s'" % procedure
+			return gcodeText.find(attributeString, metadataBeginIndex, metadataEndIndex) != -1
 		return False
 	return gcodeText.find(getTagBracketedProcedure(procedure), 0, extruderInitializationIndex) != -1
 
