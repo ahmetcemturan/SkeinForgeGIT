@@ -1004,7 +1004,7 @@ class FloatSetting( StringSetting ):
 		try:
 			self.value = float( valueString )
 		except:
-			print('Oops, can not read float' + self.name + ' ' + valueString )
+			print('Oops, can not read float ' + self.name + ' ' + valueString )
 
 
 class FloatSpin( FloatSetting ):

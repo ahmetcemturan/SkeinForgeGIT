@@ -439,9 +439,11 @@ class RaftSkein:
 		self.oldLocation = None
 		self.oldTemperatureOutputString = None
 		self.operatingFeedRateMinute = None
+		self.operatingFlowRate = None
 		self.operatingLayerEndLine = '(<operatingLayerEnd> </operatingLayerEnd>)'
 		self.operatingJump = None
 		self.orbitalFeedRatePerSecond = 2.01
+		self.sharpestProduct = 0.94
 		self.supportFlowRate = None
 		self.supportLayers = []
 		self.supportLayersTemperature = None
@@ -546,10 +548,10 @@ class RaftSkein:
 			return
 		aroundPixelTable = {}
 		aroundWidth = 0.34321 * step
-		paths = euclidean.getPathsFromEndpoints(endpoints, 1.5 * step, aroundPixelTable, aroundWidth)
+		paths = euclidean.getPathsFromEndpoints(endpoints, 1.5 * step, aroundPixelTable, self.sharpestProduct, aroundWidth)
 		self.addLayerLine(z)
-		if self.oldFlowRate != None:
-			self.addFlowRate(flowRateMultiplier * self.oldFlowRate)
+		if self.operatingFlowRate != None:
+			self.addFlowRate(flowRateMultiplier * self.operatingFlowRate)
 		for path in paths:
 			simplifiedPath = euclidean.getSimplifiedPath(path, step)
 			self.distanceFeedRate.addGcodeFromFeedRateThreadZ(feedRateMinute, simplifiedPath, self.travelFeedRateMinute, z)
@@ -703,7 +705,7 @@ class RaftSkein:
 		aroundBoundaryLoops = intercircle.getAroundsFromLoops(boundaryLoops, halfSupportOutset)
 		for aroundBoundaryLoop in aroundBoundaryLoops:
 			euclidean.addLoopToPixelTable(aroundBoundaryLoop, aroundPixelTable, aroundWidth)
-		paths = euclidean.getPathsFromEndpoints(endpoints, 1.5 * self.interfaceStep, aroundPixelTable, aroundWidth)
+		paths = euclidean.getPathsFromEndpoints(endpoints, 1.5 * self.interfaceStep, aroundPixelTable, self.sharpestProduct, aroundWidth)
 		feedRateMinuteMultiplied = self.operatingFeedRateMinute
 		supportFlowRateMultiplied = self.supportFlowRate
 		if self.layerIndex == 0:
@@ -893,6 +895,11 @@ class RaftSkein:
 				self.baseTemperature = float(splitLine[1])
 			elif firstWord == '(<coolingRate>':
 				self.coolingRate = float(splitLine[1])
+			elif firstWord == '(<edgeWidth>':
+				self.edgeWidth = float(splitLine[1])
+				self.halfEdgeWidth = 0.5 * self.edgeWidth
+				self.quarterEdgeWidth = 0.25 * self.edgeWidth
+				self.supportOutset = self.edgeWidth + self.edgeWidth * self.repository.supportGapOverPerimeterExtrusionWidth.value
 			elif firstWord == '(</extruderInitialization>)':
 				self.distanceFeedRate.addTagBracketedProcedure('raft')
 			elif firstWord == '(<heatingRate>':
@@ -903,6 +910,8 @@ class RaftSkein:
 				return
 			elif firstWord == '(<layerHeight>':
 				self.layerHeight = float(splitLine[1])
+			elif firstWord == 'M108':
+				self.oldFlowRate = float(splitLine[1][1 :])
 			elif firstWord == '(<objectFirstLayerFeedRateInfillMultiplier>':
 				self.objectFirstLayerFeedRateInfillMultiplier = float(splitLine[1])
 			elif firstWord == '(<objectFirstLayerFlowRateInfillMultiplier>':
@@ -919,13 +928,11 @@ class RaftSkein:
 				self.operatingFeedRateMinute = 60.0 * float(splitLine[1])
 				self.feedRateMinute = self.operatingFeedRateMinute
 			elif firstWord == '(<operatingFlowRate>':
-				self.oldFlowRate = float(splitLine[1])
-				self.supportFlowRate = self.oldFlowRate * self.repository.supportFlowRateOverOperatingFlowRate.value
-			elif firstWord == '(<edgeWidth>':
-				self.edgeWidth = float(splitLine[1])
-				self.halfEdgeWidth = 0.5 * self.edgeWidth
-				self.quarterEdgeWidth = 0.25 * self.edgeWidth
-				self.supportOutset = self.edgeWidth + self.edgeWidth * self.repository.supportGapOverPerimeterExtrusionWidth.value
+				self.operatingFlowRate = float(splitLine[1])
+				self.oldFlowRate = self.operatingFlowRate
+				self.supportFlowRate = self.operatingFlowRate * self.repository.supportFlowRateOverOperatingFlowRate.value
+			elif firstWord == '(<sharpestProduct>':
+				self.sharpestProduct = float(splitLine[1])
 			elif firstWord == '(<supportLayersTemperature>':
 				self.supportLayersTemperature = float(splitLine[1])
 			elif firstWord == '(<supportedLayersTemperature>':
