@@ -160,8 +160,6 @@ class CarveRepository:
 		skeinforge_profile.addListsToCraftTypeRepository('skeinforge_application.skeinforge_plugins.craft_plugins.carve.html', self )
 		self.fileNameInput = settings.FileNameInput().getFromFileName( fabmetheus_interpret.getTranslatorFileTypeTuples(), 'Open File for Carve', self, '')
 		self.openWikiManualHelpPage = settings.HelpPage().getOpenFromAbsolute('http://fabmetheus.crsndoo.com/wiki/index.php/Skeinforge_Carve')
-		settings.LabelDisplay().getFromName('- MAIN SETTINGS for Extrusion  -', self )
-		settings.LabelSeparator().getFromRepository(self)
 		self.addLayerTemplateToSVG = settings.BooleanSetting().getFromValue('Add Layer Template to SVG', self, True)
 		self.edgeWidthOverHeight = settings.FloatSpin().getFromValue( 1.4, 'Edge Width over Height (ratio):', self, 2.2, 1.8 )
 		self.extraDecimalPlaces = settings.FloatSpin().getFromValue(0.0, 'Extra Decimal Places (float):', self, 3.0, 2.0)
@@ -192,7 +190,7 @@ class CarveSkein:
 	def getCarvedSVG(self, carving, fileName, repository):
 		"Parse gnu triangulated surface text and store the carved gcode."
 		layerHeight = repository.layerHeight.value
-		edgeWidth = repository.edgeWidthOverHeight.value # * layerHeight #ACT
+		edgeWidth = repository.edgeWidthOverHeight.value * layerHeight
 		carving.setCarveLayerHeight(layerHeight)
 		importRadius = 0.5 * repository.importCoarseness.value * abs(edgeWidth)
 		carving.setCarveImportRadius(max(importRadius, 0.001 * layerHeight))
@@ -203,7 +201,7 @@ class CarveSkein:
 			return ''
 		layerHeight = carving.getCarveLayerHeight()
 		decimalPlacesCarried = euclidean.getDecimalPlacesCarried(repository.extraDecimalPlaces.value, layerHeight)
-		edgeWidth = repository.edgeWidthOverHeight.value  # * layerHeight #ACT
+		edgeWidth = repository.edgeWidthOverHeight.value * layerHeight
 		svgWriter = svg_writer.SVGWriter(
 			repository.addLayerTemplateToSVG.value,
 			carving.getCarveCornerMaximum(),
